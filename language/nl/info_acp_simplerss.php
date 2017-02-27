@@ -32,7 +32,7 @@ $lang = array_merge($lang, array(
 	'NAME'							=> 'Feed naam',
 	'NAME_EXPLAIN'					=> 'Alleen bedoeld voor jezelf ter identificatie van de feed.',
 	'TIMEOUT'						=> 'Time-out',
-	'TIMEOUT_EXPLAIN'				=> 'De tijd die gewacht wordt op antwoord voor de feed URL. Indien deze tijd verstreken is zonder antwoord wordt het verzoek afgebroken.',
+	'TIMEOUT_EXPLAIN'				=> 'De tijd die gewacht wordt op antwoord van de feed URL. Indien deze tijd verstreken is zonder antwoord wordt het verzoek afgebroken.',
 	'USER_ID'						=> 'Feed gebruiker id',
 	'USER_ID_EXPLAIN'				=> 'De id van de gebruiker op wiens naam de nieuwe RSS berichten geplaatst worden.',
 ));
