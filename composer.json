@@ -1,0 +1,26 @@
+{
+    "name": "ger/simplerss",
+    "type": "phpbb-extension",
+    "description": "Simple RSS reader that posts new items in your forum",
+    "homepage": "",
+    "version": "1.0.0-dev",
+    "time": "2017-02-24",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "Ger",
+            "email": "",
+            "homepage": "https://github.com/GerB",
+            "role": ""
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "extra": {
+        "display-name": "Simple RSS reader",
+        "soft-require": {
+            "phpbb/phpbb": ">=3.1.4,"
+        }
+    }
+}

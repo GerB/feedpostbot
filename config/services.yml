@@ -1,0 +1,20 @@
+services:
+    ger.simplerss.classes.driver:
+        class: ger\simplerss\classes\driver
+        arguments:
+            - '@config'
+            - '@config_text'
+            - '@user'
+            - '@auth'
+            - '@dbal.conn'
+            - '%core.root_path%'
+    
+    ger.simplerss.cron.task.simplerss_cron:
+        class: ger\simplerss\cron\task\simplerss_cron
+        arguments:
+            - '@config'
+            - '@ger.simplerss.classes.driver'
+        calls:
+            - [set_name, [cron.task.simplerss_cron]]
+        tags:
+            - { name: cron.task }
