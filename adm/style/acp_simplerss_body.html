@@ -10,6 +10,7 @@
 	<dt><label>{L_FEED_URL}{L_COLON}</label></dt><dd>{L_FEED_URL_EXPLAIN}</dd>
 	<dt><label>{L_ACP_FORUM_ID}{L_COLON}</label></dt><dd>{L_ACP_FORUM_ID_EXPLAIN}</dd>
 	<dt><label>{L_USER_ID}{L_COLON}</label></dt><dd>{L_USER_ID_EXPLAIN}</dd>
+	<dt><label>{L_TIMEOUT}{L_COLON}</label></dt><dd>{L_TIMEOUT_EXPLAIN}</dd>
 </dl>
 <form id="run_all" method="post" action="{U_ACTION}">
     <fieldset>
@@ -34,7 +35,7 @@
 <form id="manage_feeds" method="post" action="{U_MANAGE_ACTION}">
 					                                        
 	<table class="table1">
-		<col class="col2" /><col class="col1" /><col class="col1" /><col class="col2" /><col class="col2" /><col class="col2" />
+		<col class="col2" /><col class="col1" /><col class="col1" /><col class="col1" /><col class="col1" /><col class="col1" /><col class="col2" />
 	<thead>
 	<tr>
 		<th>#</th>
@@ -42,6 +43,7 @@
 		<th style="width: 40%">{L_FEED_URL}</th>
 		<th>{L_ACP_FORUM_ID}</th>
 		<th>{L_USER_ID}</th>
+		<th>{L_TIMEOUT}</th>
 		<th>{L_ACTION}</th>
 	</tr>
 	</thead>
@@ -54,6 +56,7 @@
 			<td><input type="text" name="{feeds.ID}_url" value="{feeds.URL}" style="width: 98%" /></td>
 			<td style="text-align: center;"><select name="{feeds.ID}_forum_id"><option value="0">{L_DISABLED}</option>{feeds.S_FORUMS}</select></td>
 			<td style="text-align: center;"><input type="number" name="{feeds.ID}_user_id" value="{feeds.USER_ID}" /></td>
+			<td style="text-align: center;"><input type="number" name="{feeds.ID}_timeout" value="{feeds.TIMEOUT}" /></td>
 			<td style="text-align: center;"><a href="{feeds.U_DELETE}" data-ajax="row_delete">{L_DELETE}</a></td>
 		</tr>
 		<!-- END feeds -->

@@ -30,6 +30,8 @@ $lang = array_merge($lang, array(
 	'FEED_URL_INVALID'				=> 'Invalid RSS feed URL. This may be the result of a duplicate in your feed list or simply an URL that does not meet the specifications',
 	'NAME'							=> 'Feed name',
 	'NAME_EXPLAIN'					=> 'Just a simple identifier for you to easily remember what the feed is about',
+	'TIMEOUT'						=> 'Timeout',
+	'TIMEOUT_EXPLAIN'				=> 'Timeout for requesting the Feed URL. If this time has passed without retrieving the feed content, the request is cancelled.',
 	'USER_ID'						=> 'Feed user id',
 	'USER_ID_EXPLAIN'				=> 'The id of the user that will be used to post new items.',
 ));

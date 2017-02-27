@@ -31,6 +31,8 @@ $lang = array_merge($lang, array(
 	'FEED_URL_INVALID'				=> 'Ongeldige RSS feed URL. Dit kan komen doordat deze reeds in de lijst staat of omdat de URL een onjuist format heeft.',
 	'NAME'							=> 'Feed naam',
 	'NAME_EXPLAIN'					=> 'Alleen bedoeld voor jezelf ter identificatie van de feed.',
+	'TIMEOUT'						=> 'Time-out',
+	'TIMEOUT_EXPLAIN'				=> 'De tijd die gewacht wordt op antwoord voor de feed URL. Indien deze tijd verstreken is zonder antwoord wordt het verzoek afgebroken.',
 	'USER_ID'						=> 'Feed gebruiker id',
 	'USER_ID_EXPLAIN'				=> 'De id van de gebruiker op wiens naam de nieuwe RSS berichten geplaatst worden.',
 ));

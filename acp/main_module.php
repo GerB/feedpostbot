@@ -48,7 +48,7 @@ class main_module
 				$url = $request->variable('add_feed', '', true);
 				if (!$this->validate_feed($current_state, $url))
 				{
-					trigger_error('L_FEED_URL_INVALID'.adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error('L_FEED_URL_INVALID' . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$current_state[] = array(
@@ -56,9 +56,11 @@ class main_module
 					'name' => $url,
 					'forum_id' => 0,
 					'user_id' => $user->data['user_id'],
+					'timeout' => 3,
 					'latest' => array(
 						'link' => '',
-						'pubDate' => ''
+						'pubDate' => '',
+						'guid' => '',
 					),
 				);
 				$config_text->set('ger_simple_rss_current_state', serialize($current_state));
@@ -72,12 +74,12 @@ class main_module
 					{
 						trigger_error('L_FEED_URL_INVALID');
 					}
-
 					$new_state[$id] = array(
 						'url' => $url,
 						'name' => $request->variable($id.'_name', ''),
 						'forum_id' => $request->variable($id.'_forum_id', 0),
 						'user_id' => $request->variable($id.'_user_id', $user->data['user_id']),
+						'timeout' => $request->variable($id.'_timeout', 3),
 						'latest' => $source['latest'],
 					);
 				}
@@ -104,6 +106,7 @@ class main_module
 					'U_DELETE'	=> $this->u_action . "&amp;action=delete&amp;id=".$id,
 					'S_FORUMS'	=> make_forum_select($source['forum_id'], false, false, false, false),
 					'USER_ID'	=> $source['user_id'],
+					'TIMEOUT'	=> $source['timeout'],
 				));
 			}
 		}

@@ -20,6 +20,7 @@ class driver
 	protected $db;
 	protected $phpbb_root_path;
 	protected $current_state;
+	protected $encoding = '';
 
 	/**
 	 * Constructor
@@ -51,7 +52,7 @@ class driver
 	 */
 	public function parse_rss($url)
 	{
-		$content = simplexml_load_file($url);
+		$content = $this->read_rss($url);
 		if ($content === false)
 		{
 			return false;
@@ -74,7 +75,10 @@ class driver
 	{
 		foreach($this->current_state as $id => $source)
 		{
-			$this->fetch_items($this->parse_rss($source['url']), $id);
+			if ($source['forum_id'] > 0)
+			{
+				$this->fetch_items($this->parse_rss($source['url']), $id);
+			}
 		}
 		$this->config_text->set('ger_simple_rss_current_state', serialize($this->current_state));
 	}
@@ -95,14 +99,15 @@ class driver
 		}
 
 		$new_latest = array(
-			'link' => $items[0]->link,
-			'pubDate' => $items[0]->pubDate
+			'link' => $this->prop_to_string($items[0]->link),
+			'pubDate' => $this->prop_to_string($items[0]->pubDate),
+			'guid' => isset($items[0]->guid) ? $this->prop_to_string($items[0]->guid) : '',
 		);
 		$this->switch_user($this->current_state[$source_id]['user_id']);
 
 		foreach($items as $item)
 		{
-			if (($item->pubDate == $this->current_state[$source_id]['latest']['pubDate']) && ($item->link == $this->current_state[$source_id]['latest']['link']))
+			if ($this->is_handled($item, $this->current_state[$source_id]['latest']))
 			{
 				// We've had this one and all below
 				$this->current_state[$source_id]['latest'] = $new_latest;
@@ -115,6 +120,26 @@ class driver
 			}
 		}
 		return $posted;
+	}
+
+	/**
+	 * Check if this is the latest item
+	 * Use guid if available, fallback to pubDate & link
+	 * @param object $item
+	 * @param array $current
+	 * @return bool
+	 */
+	private function is_handled($item, $current)
+	{
+		if (isset($item->guid) && ($this->prop_to_string($items[0]->guid) == $current['guid']))
+		{
+			return true;
+		}
+		else if (($item->pubDate == $current['pubDate']) && ($item->link == $current['link']))
+		{
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -188,16 +213,20 @@ class driver
 		{
 			// Most probaly a SimpleXMLElement
 			$prop_ary = (array) $prop;
-			$$prop = $prop_ary[0];
+			$prop = (string) $prop_ary[0];
 		}
-		$enc = @mb_detect_encoding($prop, mb_detect_order(), true);
-		if ($enc != 'UTF-8')
+		if (empty($this->encoding))
+		{
+			// Couldn't detect the encoding from stream
+			$this->encoding = @mb_detect_encoding($prop, mb_detect_order(), true);
+		}
+		if (strtoupper($this->encoding) != 'UTF-8')
 		{
 			if (!function_exists('utf8_recode'))
 			{
 				include($this->phpbb_root_path . 'includes/utf/utf_tools.php');
 			}
-			$prop = utf8_recode($prop, $enc);
+			$prop = utf8_recode($prop, $this->encoding);
 		}
 		return $prop;
 	}
@@ -261,5 +290,33 @@ class driver
 
 		// Replace main stuff and strip anything else
 		return strip_tags(preg_replace(array_keys($convert), array_values($convert), $html_string));
+	}
+
+	/**
+	 * Read RSS URL into SimpleXML object
+	 * Ensures no timeouts occur by timing out after 3 seconds
+	 * @param string $url
+	 * @param int $timeout
+	 */
+	private function read_rss($url, $timeout = 3)
+	{
+		$opts['http']['timout'] = (int) $timeout;
+		$context = stream_context_create($opts);
+		$data = file_get_contents($url, false, $context);
+		if (!$data)
+		{
+			$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'FEED_TIMEOUT', time(), array($url . ' (' . $timeout . ')'));
+			return false;
+		}
+		else
+		{
+			// Try fetching the encoding
+			preg_match('/encoding="(.+?)"/is', $data, $matches);
+			if (!empty($matches[1]))
+			{
+				$this->encoding = empty($matches[1]) ? '' : $matches[1];
+			}
+			return simplexml_load_string($data);
+		}
 	}
 }
