@@ -130,7 +130,7 @@ class driver
 		{
 			return false;
 		}
-		if (!function_exists('get_username_string'))
+		if (!function_exists('generate_text_for_storage'))
 		{
 			include($this->phpbb_root_path . 'includes/functions_content.php');
 		}
@@ -140,18 +140,9 @@ class driver
 		}
 
 		// Make sure we have UTF-8 and handle HTML
-		$description = $rss_item->description;
-		if (!mb_detect_encoding($description, 'UTF-8', true))
-		{
-			$description = mb_convert_encoding($description, "UTF-8", "auto");
-		}
-		$title_ary = (array) $rss_item->title;
-		$title = $title_ary[0];
-		if (!mb_detect_encoding($title, 'UTF-8', true))
-		{
-			$title = mb_convert_encoding($title, "UTF-8", "auto");
-		}
-		$post_text = $this->html2bbcode($description) . "\n\n" . $rss_item->link;
+		$description = $this->prop_to_string($rss_item->description);
+		$title = $this->prop_to_string($rss_item->title);
+		$post_text = $this->html2bbcode($description) . "\n\n" . $this->prop_to_string($rss_item->link);
 
 		$poll = $uid = $bitfield = $options = '';
 		$allow_bbcode = $allow_urls = $allow_smilies = true;
@@ -187,6 +178,31 @@ class driver
 	}
 
 	/**
+	 * Make sure a property is an UTF-8 encoded string
+	 * @param mixed $prop
+	 * @return string
+	 */
+	private function prop_to_string($prop)
+	{
+		if (!is_string($prop))
+		{
+			// Most probaly a SimpleXMLElement
+			$prop_ary = (array) $prop;
+			$$prop = $prop_ary[0];
+		}
+		$enc = @mb_detect_encoding($prop, mb_detect_order(), true);
+		if ($enc != 'UTF-8')
+		{
+			if (!function_exists('utf8_recode'))
+			{
+				include($this->phpbb_root_path . 'includes/utf/utf_tools.php');
+			}
+			$prop = utf8_recode($prop, $enc);
+		}
+		return $prop;
+	}
+
+		/**
 	 * Switch to the RSS source user
 	 * @param int $new_user_id
 	 * @return bool
