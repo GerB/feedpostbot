@@ -15,12 +15,13 @@
         }
     ],
     "require": {
-        "php": ">=5.3.3"
+        "php": ">=5.3.3",
+        "ext-simplexml" : "*"
     },
     "extra": {
-        "display-name": "Simple RSS reader",
+        "display-name": "Simple post bot",
         "soft-require": {
-            "phpbb/phpbb": ">=3.1.4,"
+            "phpbb/phpbb": ">=3.1.4"
         }
     }
 }

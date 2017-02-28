@@ -111,6 +111,13 @@ class main_module
 			}
 		}
 
+		// Check for MB string
+		if (!function_exists('mb_detect_encoding')) {
+			$template->assign_vars(array(
+				'NO_MB_STRING' => true,
+			));
+		}
+
 		$template->assign_vars(array(
 			'U_ADD_ACTION' => $this->u_action . "&amp;action=add",
 		));
