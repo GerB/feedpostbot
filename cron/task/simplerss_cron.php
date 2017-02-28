@@ -19,8 +19,7 @@ class simplerss_cron extends \phpbb\cron\task\base
 	 * How often we run the cron (in seconds).
 	 * @var int
 	 */
-//	protected $cron_frequency = 86400; // 24 hours
-	protected $cron_frequency = 1; // 24 hours
+	protected $cron_frequency = 3600; // 1 hour
 
 	/** @var \phpbb\config\config */
 	protected $config;
