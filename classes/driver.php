@@ -131,7 +131,7 @@ class driver
 	 */
 	private function is_handled($item, $current)
 	{
-		if (isset($item->guid) && ($this->prop_to_string($items[0]->guid) == $current['guid']))
+		if (isset($item->guid) && ($this->prop_to_string($item->guid) == $current['guid']))
 		{
 			return true;
 		}
