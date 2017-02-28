@@ -12,6 +12,6 @@ class ext extends \phpbb\extension\base
 			$user->add_lang_ext('ger/simplerss', 'info_acp_simplerss');
 			trigger_error($user->lang('REQUIRE_SIMPLEXML'), E_USER_WARNING);
 		}
-		return ;
+		return true;
     }
 }
