@@ -119,6 +119,7 @@ class driver
 				$posted++;
 			}
 		}
+		$this->current_state[$source_id]['latest'] = $new_latest;
 		return $posted;
 	}
 
@@ -131,6 +132,8 @@ class driver
 	 */
 	private function is_handled($item, $current)
 	{
+//		var_dump($this->prop_to_string($item->guid), $current['guid']);
+
 		if (isset($item->guid) && ($this->prop_to_string($item->guid) == $current['guid']))
 		{
 			return true;

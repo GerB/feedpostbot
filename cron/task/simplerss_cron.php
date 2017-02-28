@@ -74,7 +74,6 @@ class simplerss_cron extends \phpbb\cron\task\base
 	 */
 	public function should_run()
 	{
-//		return true;
 		return $this->config['simplerss_cron_last_run'] < (time() - $this->cron_frequency);
 	}
 }
