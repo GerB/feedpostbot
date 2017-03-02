@@ -52,9 +52,9 @@ class driver
 	 * @param string $url
 	 * @return boolean
 	 */
-	public function parse_rss($url)
+	public function parse_rss($url, $timeout)
 	{
-		$content = $this->read_rss($url);
+		$content = $this->read_rss($url, $timeout);
 		if ($content === false)
 		{
 			return false;
@@ -79,7 +79,7 @@ class driver
 		{
 			if ($source['forum_id'] > 0)
 			{
-				$this->fetch_items($this->parse_rss($source['url']), $id);
+				$this->fetch_items($this->parse_rss($source['url'], $source['timeout']), $id);
 			}
 		}
 		$this->config_text->set('ger_simple_rss_current_state', serialize($this->current_state));
