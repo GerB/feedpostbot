@@ -18,6 +18,7 @@ class driver
 	protected $user;
 	protected $auth;
 	protected $db;
+	protected $log;
 	protected $phpbb_root_path;
 	protected $current_state;
 	protected $encoding = '';
@@ -33,13 +34,14 @@ class driver
 	 * @param \phpbb\dbal								$db						DB object
 	 * @param string									$phpbb_root_path
 	 */
-	public function __construct(\phpbb\config\config $config,  \phpbb\config\db_text $config_text, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, $phpbb_root_path)
+	public function __construct(\phpbb\config\config $config,  \phpbb\config\db_text $config_text, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\log\log $log, $phpbb_root_path)
 	{
 		$this->config = $config;
 		$this->config_text = $config_text;
 		$this->user = $user;
 		$this->auth = $auth;
 		$this->db = $db;
+		$this->log = $log;
 		$this->phpbb_root_path = $phpbb_root_path;
 
 		$this->current_state = unserialize($this->config_text->get('ger_simple_rss_current_state'));
