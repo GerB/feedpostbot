@@ -250,8 +250,10 @@ class driver
 		{
 			// Most probaly a SimpleXMLElement
 			$prop_ary = (array) $prop;
-			$prop = (string) $prop_ary[0];
+			$prop = $prop_ary[0];
 		}
+		$prop = (string) $prop;
+
 		if (empty($this->encoding))
 		{
 			// Couldn't detect the encoding from stream
@@ -265,7 +267,7 @@ class driver
 			}
 			$prop = utf8_recode($prop, $this->encoding);
 		}
-		return $prop;
+		return html_entity_decode($prop);
 	}
 
 		/**
@@ -312,11 +314,11 @@ class driver
 	private function html2bbcode($html_string)
 	{
 		$convert = array(
+			"/\<ul(.*?)\>(.*?)\<\/ul\>/is" => "[list]$2[/list]",
+			"/\<ol(.*?)\>(.*?)\<\/ol\>/is" => "[list]$2[/list]",
 			"/\<b(.*?)\>(.*?)\<\/b\>/is" => "[b]$2[/b]",
 			"/\<i(.*?)\>(.*?)\<\/i\>/is" => "[i]$2[/i]",
 			"/\<u(.*?)\>(.*?)\<\/u\>/is" => "[u]$2[/u]",
-			"/\<ul(.*?)\>(.*?)\<\/ul\>/is" => "[list]$2[/list]",
-			"/\<ol(.*?)\>(.*?)\<\/ol\>/is" => "[list]$2[/list]",
 			"/\<li(.*?)\>(.*?)\<\/li\>/is" => "[*]$2",
 			"/\<img(.*?) src=\"(.*?)\" (.*?)\>/is" => "[img]$2[/img]",
 			"/\<div(.*?)\>(.*?)\<\/div\>/is" => "$2",
