@@ -56,6 +56,7 @@ class main_module
 					'name' => $url,
 					'forum_id' => 0,
 					'user_id' => $user->data['user_id'],
+					'textlimit' => 0,
 					'timeout' => 3,
 					'latest' => array(
 						'link' => '',
@@ -79,6 +80,7 @@ class main_module
 						'name' => $request->variable($id.'_name', ''),
 						'forum_id' => $request->variable($id.'_forum_id', 0),
 						'user_id' => $request->variable($id.'_user_id', $user->data['user_id']),
+						'textlimit' => $request->variable($id.'_textlimit', 0),
 						'timeout' => $request->variable($id.'_timeout', 3),
 						'latest' => $source['latest'],
 					);
@@ -106,6 +108,7 @@ class main_module
 					'U_DELETE'	=> $this->u_action . "&amp;action=delete&amp;id=".$id,
 					'S_FORUMS'	=> make_forum_select($source['forum_id'], false, false, false, false),
 					'USER_ID'	=> $source['user_id'],
+					'TEXTLIMIT'	=> $source['textlimit'],
 					'TIMEOUT'	=> $source['timeout'],
 				));
 			}

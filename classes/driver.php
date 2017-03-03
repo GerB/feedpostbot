@@ -204,7 +204,17 @@ class driver
 		// Make sure we have UTF-8 and handle HTML
 		$description = $this->prop_to_string($rss_item->description);
 		$title = $this->prop_to_string($rss_item->title);
-		$post_text = $this->html2bbcode($description) . "\n\n" . $this->prop_to_string($rss_item->link);
+
+		// Only show excerpt of feed if a text limit is given, but make it nice
+		if (!empty($this->current_state[$source_id]['textlimit']))
+		{
+			$post_text = $this->html2bbcode($this->closetags($this->character_limiter($description, $this->current_state[$source_id]['textlimit'])));
+			$post_text .= "\n\n" . '[url=' . $this->prop_to_string($rss_item->link) . ']' . $this->user->lang('READ_MORE') . '[/url]';
+		}
+		else
+		{
+			$post_text = $this->html2bbcode($description) . "\n\n" . $this->prop_to_string($rss_item->link);
+		}
 
 		$poll = $uid = $bitfield = $options = '';
 		$allow_bbcode = $allow_urls = $allow_smilies = true;
@@ -305,32 +315,6 @@ class driver
 		return empty($row['forum_name']) ? '' : $row['forum_name'];
 	}
 
-
-	/**
-	 * Simple HTML to BBcode conversion
-	 * @param string $html_string
-	 * @return string
-	 */
-	private function html2bbcode($html_string)
-	{
-		$convert = array(
-			"/\<ul(.*?)\>(.*?)\<\/ul\>/is" => "[list]$2[/list]",
-			"/\<ol(.*?)\>(.*?)\<\/ol\>/is" => "[list]$2[/list]",
-			"/\<b(.*?)\>(.*?)\<\/b\>/is" => "[b]$2[/b]",
-			"/\<i(.*?)\>(.*?)\<\/i\>/is" => "[i]$2[/i]",
-			"/\<u(.*?)\>(.*?)\<\/u\>/is" => "[u]$2[/u]",
-			"/\<li(.*?)\>(.*?)\<\/li\>/is" => "[*]$2",
-			"/\<img(.*?) src=\"(.*?)\" (.*?)\>/is" => "[img]$2[/img]",
-			"/\<div(.*?)\>(.*?)\<\/div\>/is" => "$2",
-			"/\<br(.*?)\>/is" => "\n",
-			"/\<strong(.*?)\>(.*?)\<\/strong\>/is" => "[b]$2[/b]",
-			"/\<a (.*?)href=\"(.*?)\"(.*?)\>(.*?)\<\/a\>/is" => "[url=$2]$4[/url]",
-		);
-
-		// Replace main stuff and strip anything else
-		return strip_tags(preg_replace(array_keys($convert), array_values($convert), $html_string));
-	}
-
 	/**
 	 * Read RSS URL into SimpleXML object
 	 * Ensures no timeouts occur by timing out after 3 seconds
@@ -357,5 +341,106 @@ class driver
 			}
 			return simplexml_load_string($data);
 		}
+	}
+
+	/**
+	 * Elegant word wrap
+	 * @param string $str
+	 * @param int $n
+	 * @param string $end_char
+	 * @return string
+	 */
+	private function character_limiter($str, $n = 300, $end_char = '...')
+	{
+		if (strlen($str) < $n)
+		{
+			return $str;
+		}
+
+		$str = preg_replace("/\s+/", ' ', str_replace(array(
+			"\r\n",
+			"\r",
+			"\n"), ' ', $str));
+
+		if (strlen($str) <= $n)
+		{
+			return $str;
+		}
+
+		$out = "";
+		foreach (explode(' ', trim($str)) as $val)
+		{
+			$out .= $val . ' ';
+
+			if (strlen($out) >= $n)
+			{
+				$out = trim($out);
+				return (strlen($out) == strlen($str)) ? $out : $out . $end_char;
+			}
+		}
+	}
+
+	/**
+	 * Close open HTML tags
+	 * @param string $html
+	 * @return string
+	 */
+	private function closetags($html)
+	{
+		// put all opened tags into an array
+		preg_match_all("#<([a-z]+)( .*)?(?!/)>#iU", $html, $result);
+		$openedtags = $result[1];
+
+		// put all closed tags into an array
+		preg_match_all("#</([a-z]+)>#iU", $html, $result);
+		$closedtags = $result[1];
+		$len_opened = count($openedtags);
+
+		// all tags are closed
+		if (count($closedtags) == $len_opened)
+		{
+			return $html;
+		}
+
+		$openedtags = array_reverse($openedtags);
+		// close tags
+		for ($i = 0; $i < $len_opened; $i++)
+		{
+			if (!in_array($openedtags[$i], $closedtags))
+			{
+				$html .= "</" . $openedtags[$i] . ">";
+			}
+			else
+			{
+				unset($closedtags[array_search($openedtags[$i], $closedtags)]);
+			}
+		}
+		return $html;
+	}
+
+
+	/**
+	 * Simple HTML to BBcode conversion
+	 * @param string $html_string
+	 * @return string
+	 */
+	private function html2bbcode($html_string)
+	{
+		$convert = array(
+			"/\<ul(.*?)\>(.*?)\<\/ul\>/is" => "[list]$2[/list]",
+			"/\<ol(.*?)\>(.*?)\<\/ol\>/is" => "[list]$2[/list]",
+			"/\<b(.*?)\>(.*?)\<\/b\>/is" => "[b]$2[/b]",
+			"/\<i(.*?)\>(.*?)\<\/i\>/is" => "[i]$2[/i]",
+			"/\<u(.*?)\>(.*?)\<\/u\>/is" => "[u]$2[/u]",
+			"/\<li(.*?)\>(.*?)\<\/li\>/is" => "[*]$2",
+			"/\<img(.*?) src=\"(.*?)\" (.*?)\>/is" => "[img]$2[/img]",
+			"/\<div(.*?)\>(.*?)\<\/div\>/is" => "$2",
+			"/\<br(.*?)\>/is" => "\n",
+			"/\<strong(.*?)\>(.*?)\<\/strong\>/is" => "[b]$2[/b]",
+			"/\<a (.*?)href=\"(.*?)\"(.*?)\>(.*?)\<\/a\>/is" => "[url=$2]$4[/url]",
+		);
+
+		// Replace main stuff and strip anything else
+		return strip_tags(preg_replace(array_keys($convert), array_values($convert), $html_string));
 	}
 }
