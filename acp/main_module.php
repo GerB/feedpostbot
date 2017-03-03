@@ -29,7 +29,6 @@ class main_module
 
 		// Fetch current feeds
 		$current_state = $simplerss->current_state;
-		var_dump($current_state);
 		if ($request->is_set_post('run_all'))
 		{
 			$simplerss->fetch_all();
