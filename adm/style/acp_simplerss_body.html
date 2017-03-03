@@ -12,6 +12,7 @@
 	<dt><label>{L_USER_ID}{L_COLON}</label></dt><dd>{L_USER_ID_EXPLAIN}</dd>
 	<dt><label>{L_TEXTLIMIT}{L_COLON}</label></dt><dd>{L_TEXTLIMIT_EXPLAIN}</dd>
 	<dt><label>{L_TIMEOUT}{L_COLON}</label></dt><dd>{L_TIMEOUT_EXPLAIN}</dd>
+	<dt><label>{L_CURDATE}{L_COLON}</label></dt><dd>{L_CURDATE_EXPLAIN}</dd>
 </dl>
 <form id="run_all" method="post" action="{U_ACTION}">
     <fieldset>
@@ -36,16 +37,17 @@
 <form id="manage_feeds" method="post" action="{U_MANAGE_ACTION}">
 					                                        
 	<table class="table1">
-		<col class="col1" /><col class="col1" /><col class="col1" /><col class="col1" /><col class="col1" /><col class="col1" /><col class="col1" /><col class="col1" />
+		<col class="col1" /><col class="col2" /><col class="col2" /><col class="col2" /><col class="col2" /><col class="col2" /><col class="col2" /><col class="col2" /><col class="col2" />
 	<thead>
 	<tr>
 		<th>#</th>
 		<th>{L_NAME}</th>
-		<th style="width: 40%">{L_FEED_URL}</th>
+		<th style="width: 25%">{L_FEED_URL}</th>
 		<th>{L_ACP_FORUM_ID}</th>
 		<th>{L_USER_ID}</th>
 		<th>{L_TEXTLIMIT}</th>
 		<th>{L_TIMEOUT}</th>
+		<th>{L_CURDATE}</th>
 		<th>{L_ACTION}</th>
 	</tr>
 	</thead>
@@ -57,9 +59,10 @@
 			<td><input type="text" name="{feeds.ID}_name" value="{feeds.NAME}" style="width: 98%" /></td>
 			<td><input type="text" name="{feeds.ID}_url" value="{feeds.URL}" style="width: 98%" /></td>
 			<td style="text-align: center;"><select name="{feeds.ID}_forum_id"><option value="0">{L_DISABLED}</option>{feeds.S_FORUMS}</select></td>
-			<td style="text-align: center;"><input type="number" name="{feeds.ID}_user_id" value="{feeds.USER_ID}" /></td>
-			<td style="text-align: center;"><input type="number" name="{feeds.ID}_textlimit" value="{feeds.TEXTLIMIT}" /></td>
-			<td style="text-align: center;"><input type="number" name="{feeds.ID}_timeout" value="{feeds.TIMEOUT}" /></td>
+			<td style="text-align: center;"><input type="number" min="0" name="{feeds.ID}_user_id" value="{feeds.USER_ID}" /></td>
+			<td style="text-align: center;"><input type="number" min="0" name="{feeds.ID}_textlimit" value="{feeds.TEXTLIMIT}" /></td>
+			<td style="text-align: center;"><input type="number" min="0" name="{feeds.ID}_timeout" value="{feeds.TIMEOUT}" /></td>
+			<td style="text-align: center;"><label><input type="checkbox" class="radio" name="{feeds.ID}_curdate"<!-- IF feeds.S_CURDATE --> checked="checked"<!-- ENDIF --> /> {L_CURDATE}</label></td>
 			<td style="text-align: center;"><a href="{feeds.U_DELETE}" data-ajax="row_delete">{L_DELETE}</a></td>
 		</tr>
 		<!-- END feeds -->
@@ -71,8 +74,7 @@
 	</tbody>
 	</table>
 	<!-- IF feeds -->
-		<fieldset class="quick">
-
+        <fieldset class="quick" style="text-align: inherit">
 		<input class="button1" type="submit" name="submit" value="{L_SUBMIT}" />
 	</fieldset>
 	<!-- ENDIF -->

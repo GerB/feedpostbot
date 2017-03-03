@@ -92,6 +92,7 @@ class driver
 			{
 				$return[] = $item;
 			}
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_FETCHED', time(), array($url));
 			return $return;
 		}
 	}
@@ -240,7 +241,7 @@ class driver
 			'topic_title'		 => $title,
 			'notify_set'		 => true, // (bool)
 			'notify'			 => true, // (bool)
-			'post_time'			 => strtotime($rss_item->pubDate), // Set a specific time, use 0 to let submit_post() take care of getting the proper time (int)
+			'post_time'			 => empty($this->current_state[$source_id]['curdate']) ? ($rss_item->pubDate) : 0, // Set a specific time, use 0 to let submit_post() take care of getting the proper time (int)
 			'forum_name'		 => $this->get_forum_name($this->current_state[$source_id]['forum_id']), // For identifying the name of the forum in a notification email. (string)    // Indexing
 			'enable_indexing'	 => true, // Allow indexing the post? (bool)    // 3.0.6
 			'force_visibility'	 => true, // 3.1.x: Allow the post to be submitted without going into unapproved queue, or make it be deleted (replaces force_approved_state)
@@ -328,7 +329,7 @@ class driver
 		$data = file_get_contents($url, false, $context);
 		if (!$data)
 		{
-			$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'FEED_TIMEOUT', time(), array($url . ' (' . $timeout . ')'));
+			$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_TIMEOUT', time(), array($url . ' (' . $timeout . ' s)'));
 			return false;
 		}
 		else

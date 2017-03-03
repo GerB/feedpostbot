@@ -58,6 +58,7 @@ class main_module
 					'user_id' => $user->data['user_id'],
 					'textlimit' => 0,
 					'timeout' => 3,
+					'curdate' => 0,
 					'latest' => array(
 						'link' => '',
 						'pubDate' => '',
@@ -82,6 +83,7 @@ class main_module
 						'user_id' => $request->variable($id.'_user_id', $user->data['user_id']),
 						'textlimit' => $request->variable($id.'_textlimit', 0),
 						'timeout' => $request->variable($id.'_timeout', 3),
+						'curdate' => strlen($request->variable($id . '_curdate', '')) > 0 ? 1 : 0,
 						'latest' => $source['latest'],
 					);
 				}
@@ -110,6 +112,7 @@ class main_module
 					'USER_ID'	=> $source['user_id'],
 					'TEXTLIMIT'	=> $source['textlimit'],
 					'TIMEOUT'	=> $source['timeout'],
+					'S_CURDATE'	=> empty($source['curdate']) ? false : true,
 				));
 			}
 		}
