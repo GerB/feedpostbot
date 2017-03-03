@@ -30,6 +30,7 @@ $lang = array_merge($lang, array(
 	'FEED_URL_INVALID'				=> 'Invalid RSS feed URL. This may be the result of a duplicate in your feed list or simply an URL that does not meet the specifications',
 	'NAME'							=> 'Feed name',
 	'NAME_EXPLAIN'					=> 'Just a simple identifier for you to easily remember what the feed is about',
+	'NO_FEEDS'						=> 'There are no feeds yet.',
 	'NO_MB_STRING'					=> 'The PHP <a href="http://php.net/manual/en/book.mbstring.php">mbstring extension</a> is not available on the server. Simple RSS will work, but you might encounter malformed posts due to the encoding of the RSS feeds.',
 	'REQUIRE_SIMPLEXML'				=> 'The PHP <a href="http://php.net/manual/en/book.simplexml.php">SimpleXML extension</a> is not available on the server. Simple RSS needs this to read RSS feeds and therefore cannot be installed.',
 	'TIMEOUT'						=> 'Timeout',

@@ -26,7 +26,7 @@ class install_simplerss extends \phpbb\db\migration\migration
 	{
 		return array(
 			array('config.add', array('simplerss_cron_last_run', 0)),
-			array('config_text.add', array('ger_cmbb_rightbar_html', '<h3>cmBB is the best! :)</h3>' . "\n" . '<p>Cats are cute</p>')),
+			array('config_text.add', array('ger_simple_rss_current_state', '')),
 			array('module.add', array(
 				'acp',
 				'ACP_CAT_DOT_MODS',

@@ -21,16 +21,17 @@ class main_module
 	{
 		global $request, $template, $user, $phpbb_container;
 		$config_text = $phpbb_container->get('config_text');
+		$simplerss = $phpbb_container->get('ger.simplerss.classes.driver');
 
 		$this->tpl_name		 = 'acp_simplerss_body';
 		$this->page_title	 = $user->lang('ACP_SIMPLERSS_TITLE');
 		add_form_key('ger/simplerss');
 
 		// Fetch current feeds
-		$current_state = unserialize($config_text->get('ger_simple_rss_current_state'));
+		$current_state = $simplerss->current_state;
+		var_dump($current_state);
 		if ($request->is_set_post('run_all'))
 		{
-			$simplerss = $phpbb_container->get('ger.simplerss.classes.driver');
 			$simplerss->fetch_all();
 			trigger_error($user->lang('ACP_SIMPLERSS_SETTING_SAVED').adm_back_link($this->u_action));
 
@@ -63,7 +64,7 @@ class main_module
 						'guid' => '',
 					),
 				);
-				$config_text->set('ger_simple_rss_current_state', serialize($current_state));
+				$config_text->set('ger_simple_rss_current_state', json_encode($current_state));
 			}
 			else
 			{
@@ -83,7 +84,7 @@ class main_module
 						'latest' => $source['latest'],
 					);
 				}
-				$config_text->set('ger_simple_rss_current_state', serialize($new_state));
+				$config_text->set('ger_simple_rss_current_state', json_encode($new_state));
 			}
 			trigger_error($user->lang('ACP_SIMPLERSS_SETTING_SAVED').adm_back_link($this->u_action));
 		}
@@ -91,7 +92,7 @@ class main_module
 		{
 			$id = $request->variable('id', 0);
 			unset($current_state[$id]);
-			$config_text->set('ger_simple_rss_current_state', serialize($current_state));
+			$config_text->set('ger_simple_rss_current_state', json_encode($current_state));
 		}
 
 		// List current

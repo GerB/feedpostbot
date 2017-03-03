@@ -20,7 +20,7 @@ class driver
 	protected $db;
 	protected $log;
 	protected $phpbb_root_path;
-	protected $current_state;
+	public $current_state;
 	protected $encoding = '';
 
 	/**
@@ -44,7 +44,34 @@ class driver
 		$this->log = $log;
 		$this->phpbb_root_path = $phpbb_root_path;
 
-		$this->current_state = unserialize($this->config_text->get('ger_simple_rss_current_state'));
+		$this->init_current_state();
+	}
+
+	/**
+	 * Set and return current state
+	 */
+	public function init_current_state()
+	{
+		$ct = $this->config_text->get('ger_simple_rss_current_state');
+		if (empty($ct))
+		{
+			$this->current_state = false;
+		}
+		else
+		{
+			// Legacy check for serialize function, instantly convert to JSON
+			$sertest = @unserialize($ct);
+			if ($sertest === false)
+			{
+				$this->current_state = json_decode($ct, true);
+			}
+			else
+			{
+				$this->config_text->set('ger_simple_rss_current_state', json_encode($sertest));
+				return $sertest;
+			}
+		}
+		return $this->current_state;
 	}
 
 	/**
@@ -75,6 +102,11 @@ class driver
 	 */
 	public function fetch_all()
 	{
+		if (empty($this->current_state))
+		{
+			return;
+		}
+
 		foreach($this->current_state as $id => $source)
 		{
 			if ($source['forum_id'] > 0)
@@ -82,7 +114,7 @@ class driver
 				$this->fetch_items($this->parse_rss($source['url'], $source['timeout']), $id);
 			}
 		}
-		$this->config_text->set('ger_simple_rss_current_state', serialize($this->current_state));
+		$this->config_text->set('ger_simple_rss_current_state', json_encode($this->current_state));
 	}
 
 	/**
