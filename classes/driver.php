@@ -326,7 +326,7 @@ class driver
 	{
 		$opts['http']['timout'] = (int) $timeout;
 		$context = stream_context_create($opts);
-		$data = file_get_contents($url, false, $context);
+		$data = @file_get_contents($url, false, $context); // Suppress errors
 		if (!$data)
 		{
 			$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_TIMEOUT', time(), array($url . ' (' . $timeout . ' s)'));
