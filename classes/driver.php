@@ -75,30 +75,7 @@ class driver
 	}
 
 	/**
-	 * Parse the RSS source into relevant info
-	 * @param string $url
-	 * @return boolean
-	 */
-	public function parse_rss($url, $timeout)
-	{
-		$content = $this->read_rss($url, $timeout);
-		if ($content === false)
-		{
-			return false;
-		}
-		else
-		{
-			foreach($content->channel->item as $item)
-			{
-				$return[] = $item;
-			}
-			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_FETCHED', time(), array($url));
-			return $return;
-		}
-	}
-
-	/**
-	 * Fetch all RSS items.
+	 * Fetch all feeds
 	 * This is called by the cron handler
 	 */
 	public function fetch_all()
@@ -110,12 +87,131 @@ class driver
 
 		foreach($this->current_state as $id => $source)
 		{
+			// Only proceed if not disabled in ACP
 			if ($source['forum_id'] > 0)
 			{
-				$this->fetch_items($this->parse_rss($source['url'], $source['timeout']), $id);
+				$this->fetch_items($this->parse_feed($source['url'], $source['timeout']), $id);
 			}
 		}
 		$this->config_text->set('ger_simple_rss_current_state', json_encode($this->current_state));
+	}
+
+	/**
+	 * Parse a feed
+	 * @param string $url
+	 * @param int $timeout
+	 * @return boolean
+	 */
+	private function parse_feed($url, $timeout = 3)
+	{
+		$opts['http']['timout'] = (int) $timeout;
+		$context = stream_context_create($opts);
+		$data = @file_get_contents($url, false, $context); // Suppress errors
+		if (!$data)
+		{
+			$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_TIMEOUT', time(), array($url . ' (' . $timeout . ' s)'));
+			return false;
+		}
+		else
+		{
+			// Determine feed type and proceed accordingly
+			if ((stripos($data, 'application/atom+xml')!== false) || preg_match('/feed xmlns="(.+?)Atom"/i', $data))
+			{
+				return $this->parse_atom($data, $url);
+			}
+			else if (stripos($data, '<rdf:RDF') !== false)
+			{
+				return $this->parse_rdf($data, $url);
+			}
+			else
+			{
+				return $this->parse_rss($data, $url);
+			}
+		}
+	}
+
+	/**
+	 * Parse the atom source into relevant info
+	 * @param string $data	valid ATOM XML string
+	 * @return array
+	 */
+	private function parse_atom($data, $url)
+	{
+		$content = simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NOCDATA);
+		if ($content === false)
+		{
+			return false;
+		}
+
+		foreach($content->entry as $item)
+		{
+			$return[] = array(
+				'guid' => $this->prop_to_string($item->id),
+				'title' => $this->prop_to_string($item->title),
+				'link' => $this->prop_to_string($item->link->attributes()->href),
+				'description' =>  empty($item->content) ? ( empty($item->summary) ? $this->prop_to_string($item->title) : $this->prop_to_string($item->summary) ) : $this->prop_to_string($item->content),
+				'pubDate' => empty($item->updated) ? 0 : $this->prop_to_string($item->updated),
+			);
+		}
+
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_FETCHED', time(), array($url));
+		return $return;
+	}
+
+	/**
+	 * Parse the RDF source into relevant info
+	 * @param string $data	valid RDF XML string
+	 * @return array
+	 */
+	private function parse_rdf($data, $url)
+	{
+		// RDF default hasn't dates. Most use a DC or SY namespace but SimpleXML doesn't handle those
+		$find = array('dc:date>', 'sy:date>');
+
+		$content = simplexml_load_string(str_replace($find, 'date>', $data), 'SimpleXMLElement', LIBXML_NOCDATA);
+		if ($content === false)
+		{
+			return false;
+		}
+
+		foreach($content->item as $item)
+		{
+			$return[] = array(
+				'title' => $this->prop_to_string($item->title),
+				'link' => $this->prop_to_string($item->link),
+				'description' =>  empty($item->description) ? $this->prop_to_string($item->title) : $this->prop_to_string($item->description),
+				'pubDate' => empty($item->date) ? ( empty($content->channel->date) ? 0 : $this->prop_to_string($content->channel->date) ) : $this->prop_to_string($item->date), // Fallback galore
+			);
+		}
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_FETCHED', time(), array($url));
+		return $return;
+	}
+
+	/**
+	 * Parse the RSS source into relevant info
+	 * @param string $data	valid RSS XML string
+	 * @return array
+	 */
+	private function parse_rss($data, $url)
+	{
+		$content = simplexml_load_string(($data), 'SimpleXMLElement', LIBXML_NOCDATA);
+		if ($content === false)
+		{
+			return false;
+		}
+		foreach($content->channel->item as $item)
+		{
+			$return[] = array(
+				'guid' => $this->prop_to_string($item->guid),
+				'title' => $this->prop_to_string($item->title),
+				'link' => $this->prop_to_string($item->link),
+				'description' =>  empty($item->description) ? $this->prop_to_string($item->title) : $this->prop_to_string($item->description),
+				'pubDate' => $this->prop_to_string($item->pubDate),
+			);
+		}
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_FETCHED', time(), array($url));
+		return $return;
+		
 	}
 
 	/**
@@ -134,12 +230,12 @@ class driver
 		}
 
 		$new_latest = array(
-			'link' => $this->prop_to_string($items[0]->link),
-			'pubDate' => $this->prop_to_string($items[0]->pubDate),
-			'guid' => isset($items[0]->guid) ? $this->prop_to_string($items[0]->guid) : '',
+			'link' => $this->prop_to_string($items[0]['link']),
+			'pubDate' => $this->prop_to_string($items[0]['pubDate']),
+			'guid' => empty($items[0]['guid']) ? '' : $items[0]['guid'],
 		);
 		$this->switch_user($this->current_state[$source_id]['user_id']);
-
+		$to_post = array();
 		foreach($items as $item)
 		{
 			if ($this->is_handled($item, $this->current_state[$source_id]['latest']))
@@ -150,10 +246,20 @@ class driver
 			}
 			else
 			{
+				$to_post[] = $item;
+			}
+		}
+		if (!empty($to_post))
+		{
+			// Reverse array to make sure that the latest item is also the newest
+			$to_post = array_reverse($to_post);
+			foreach($to_post as $item)
+			{
 				$this->post_message($item, $source_id);
 				$posted++;
 			}
 		}
+
 		$this->current_state[$source_id]['latest'] = $new_latest;
 		return $posted;
 	}
@@ -167,13 +273,11 @@ class driver
 	 */
 	private function is_handled($item, $current)
 	{
-//		var_dump($this->prop_to_string($item->guid), $current['guid']);
-
-		if (isset($item->guid) && ($this->prop_to_string($item->guid) == $current['guid']))
+		if (isset($item['guid']) && ($this->prop_to_string($item['guid']) == $current['guid']))
 		{
 			return true;
 		}
-		else if (($item->pubDate == $current['pubDate']) && ($item->link == $current['link']))
+		else if (($item['pubDate'] == $current['pubDate']) && ($item['link'] == $current['link']))
 		{
 			return true;
 		}
@@ -203,18 +307,18 @@ class driver
 		}
 
 		// Make sure we have UTF-8 and handle HTML
-		$description = $this->prop_to_string($rss_item->description);
-		$title = $this->prop_to_string($rss_item->title);
+		$description = $rss_item['description'];
+		$title = $rss_item['title'];
 
 		// Only show excerpt of feed if a text limit is given, but make it nice
 		if (!empty($this->current_state[$source_id]['textlimit']))
 		{
 			$post_text = $this->html2bbcode($this->closetags($this->character_limiter($description, $this->current_state[$source_id]['textlimit'])));
-			$post_text .= "\n\n" . '[url=' . $this->prop_to_string($rss_item->link) . ']' . $this->user->lang('READ_MORE') . '[/url]';
+			$post_text .= "\n\n" . '[url=' . $rss_item['link'] . ']' . $this->user->lang('READ_MORE') . '[/url]';
 		}
 		else
 		{
-			$post_text = $this->html2bbcode($description) . "\n\n" . $this->prop_to_string($rss_item->link);
+			$post_text = $this->html2bbcode($description) . "\n\n" . $rss_item['link'];
 		}
 
 		$poll = $uid = $bitfield = $options = '';
@@ -241,7 +345,7 @@ class driver
 			'topic_title'		 => $title,
 			'notify_set'		 => true, // (bool)
 			'notify'			 => true, // (bool)
-			'post_time'			 => empty($this->current_state[$source_id]['curdate']) ? strtotime($rss_item->pubDate) : 0, // Set a specific time, use 0 to let submit_post() take care of getting the proper time (int)
+			'post_time'			 => empty($this->current_state[$source_id]['curdate']) ? strtotime($rss_item['pubDate']) : 0, // Set a specific time, use 0 to let submit_post() take care of getting the proper time (int)
 			'forum_name'		 => $this->get_forum_name($this->current_state[$source_id]['forum_id']), // For identifying the name of the forum in a notification email. (string)    // Indexing
 			'enable_indexing'	 => true, // Allow indexing the post? (bool)    // 3.0.6
 			'force_visibility'	 => true, // 3.1.x: Allow the post to be submitted without going into unapproved queue, or make it be deleted (replaces force_approved_state)
@@ -251,7 +355,7 @@ class driver
 	}
 
 	/**
-	 * Make sure a property is an UTF-8 encoded string
+	 * Make sure we have a string
 	 * @param mixed $prop
 	 * @return string
 	 */
@@ -264,24 +368,10 @@ class driver
 			$prop = $prop_ary[0];
 		}
 		$prop = (string) $prop;
-
-		if (empty($this->encoding))
-		{
-			// Couldn't detect the encoding from stream
-			$this->encoding = @mb_detect_encoding($prop, mb_detect_order(), true);
-		}
-		if (strtoupper($this->encoding) != 'UTF-8')
-		{
-			if (!function_exists('utf8_recode'))
-			{
-				include($this->phpbb_root_path . 'includes/utf/utf_tools.php');
-			}
-			$prop = utf8_recode($prop, $this->encoding);
-		}
 		return html_entity_decode($prop);
 	}
 
-		/**
+	/**
 	 * Switch to the RSS source user
 	 * @param int $new_user_id
 	 * @return bool
@@ -314,34 +404,6 @@ class driver
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		return empty($row['forum_name']) ? '' : $row['forum_name'];
-	}
-
-	/**
-	 * Read RSS URL into SimpleXML object
-	 * Ensures no timeouts occur by timing out after 3 seconds
-	 * @param string $url
-	 * @param int $timeout
-	 */
-	private function read_rss($url, $timeout = 3)
-	{
-		$opts['http']['timout'] = (int) $timeout;
-		$context = stream_context_create($opts);
-		$data = @file_get_contents($url, false, $context); // Suppress errors
-		if (!$data)
-		{
-			$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_TIMEOUT', time(), array($url . ' (' . $timeout . ' s)'));
-			return false;
-		}
-		else
-		{
-			// Try fetching the encoding
-			preg_match('/encoding="(.+?)"/is', $data, $matches);
-			if (!empty($matches[1]))
-			{
-				$this->encoding = empty($matches[1]) ? '' : $matches[1];
-			}
-			return simplexml_load_string($data);
-		}
 	}
 
 	/**
