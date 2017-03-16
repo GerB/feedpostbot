@@ -2,14 +2,14 @@
 
 /**
  *
- * Simple RSS reader
+ * Feed post bot
  *
  * @copyright (c) 2017 Ger Bruinsma
  * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
 
-namespace ger\simplerss\classes;
+namespace ger\feedpostbot\classes;
 
 class driver
 {
@@ -21,7 +21,6 @@ class driver
 	protected $log;
 	protected $phpbb_root_path;
 	public $current_state;
-	protected $encoding = '';
 
 	/**
 	 * Constructor
@@ -52,7 +51,7 @@ class driver
 	 */
 	public function init_current_state()
 	{
-		$ct = $this->config_text->get('ger_simple_rss_current_state');
+		$ct = $this->config_text->get('ger_feedpostbot_current_state');
 		if (empty($ct))
 		{
 			$this->current_state = false;
@@ -67,7 +66,7 @@ class driver
 			}
 			else
 			{
-				$this->config_text->set('ger_simple_rss_current_state', json_encode($sertest));
+				$this->config_text->set('ger_feedpostbot_current_state', json_encode($sertest));
 				return $sertest;
 			}
 		}
@@ -93,7 +92,7 @@ class driver
 				$this->fetch_items($this->parse_feed($source['url'], $source['timeout']), $id);
 			}
 		}
-		$this->config_text->set('ger_simple_rss_current_state', json_encode($this->current_state));
+		$this->config_text->set('ger_feedpostbot_current_state', json_encode($this->current_state));
 	}
 
 	/**

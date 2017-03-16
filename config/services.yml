@@ -1,6 +1,6 @@
 services:
-    ger.simplerss.classes.driver:
-        class: ger\simplerss\classes\driver
+    ger.feedpostbot.classes.driver:
+        class: ger\feedpostbot\classes\driver
         arguments:
             - '@config'
             - '@config_text'
@@ -10,12 +10,12 @@ services:
             - '@log'
             - '%core.root_path%'
     
-    ger.simplerss.cron.task.simplerss_cron:
-        class: ger\simplerss\cron\task\simplerss_cron
+    ger.feedpostbot.cron.task.feedpostbot_cron:
+        class: ger\feedpostbot\cron\task\feedpostbot_cron
         arguments:
             - '@config'
-            - '@ger.simplerss.classes.driver'
+            - '@ger.feedpostbot.classes.driver'
         calls:
-            - [set_name, [cron.task.simplerss_cron]]
+            - [set_name, [cron.task.feedpostbot_cron]]
         tags:
             - { name: cron.task }

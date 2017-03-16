@@ -8,13 +8,13 @@
  *
  */
 
-namespace ger\simplerss\migrations;
+namespace ger\feedpostbot\migrations;
 
-class install_simplerss extends \phpbb\db\migration\migration
+class install_feedpostbot extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return isset($this->config['simplerss_cron_last_run']);
+		return isset($this->config['feedpostbot_cron_last_run']);
 	}
 
 	static public function depends_on()
@@ -25,18 +25,18 @@ class install_simplerss extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return array(
-			array('config.add', array('simplerss_cron_last_run', 0)),
-			array('config_text.add', array('ger_simple_rss_current_state', '')),
+			array('config.add', array('feedpostbot_cron_last_run', 0)),
+			array('config_text.add', array('ger_feedpostbot_current_state', '')),
 			array('module.add', array(
 				'acp',
 				'ACP_CAT_DOT_MODS',
-				'ACP_SIMPLERSS_TITLE'
+				'ACP_FEEDPOSTBOT_TITLE'
 			)),
 			array('module.add', array(
 				'acp',
-				'ACP_SIMPLERSS_TITLE',
+				'ACP_FEEDPOSTBOT_TITLE',
 				array(
-					'module_basename'	=> '\ger\simplerss\acp\main_module',
+					'module_basename'	=> '\ger\feedpostbot\acp\main_module',
 					'modes'				=> array('settings'),
 				),
 			)),

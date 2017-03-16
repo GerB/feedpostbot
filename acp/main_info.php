@@ -1,30 +1,30 @@
 <?php
 /**
  *
- * Simple RSS reader. An extension for the phpBB Forum Software package.
+ * Feed post bot. An extension for the phpBB Forum Software package.
  *
  * @copyright (c) 2017, Ger, https://github.com/GerB
  * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
 
-namespace ger\simplerss\acp;
+namespace ger\feedpostbot\acp;
 
 /**
- * Simple RSS reader ACP module info.
+ * Feed post bot ACP module info.
  */
 class main_info
 {
 	public function module()
 	{
 		return array(
-			'filename'	=> '\ger\simplerss\acp\main_module',
-			'title'		=> 'ACP_SIMPLERSS_TITLE',
+			'filename'	=> '\ger\feedpostbot\acp\main_module',
+			'title'		=> 'ACP_FEEDPOSTBOT_TITLE',
 			'modes'		=> array(
 				'settings'	=> array(
-					'title'	=> 'ACP_SIMPLERSS_TITLE',
-					'auth'	=> 'ext_ger/simplerss && acl_a_board',
-					'cat'	=> array('ACP_SIMPLERSS_TITLE')
+					'title'	=> 'ACP_FEEDPOSTBOT_TITLE',
+					'auth'	=> 'ext_ger/feedpostbot && acl_a_board',
+					'cat'	=> array('ACP_FEEDPOSTBOT_TITLE')
 				),
 			),
 		);

@@ -2,7 +2,7 @@
 
 ## Installation
 
-Copy the extension to phpBB/ext/ger/simplerss
+Copy the extension to phpBB/ext/ger/feedpostbot
 
 Go to "ACP" > "Customise" > "Extensions" and enable the "Simple RSS reader" extension.
 

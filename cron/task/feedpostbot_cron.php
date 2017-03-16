@@ -1,41 +1,41 @@
 <?php
 /**
  *
- * Simple RSS reader. An extension for the phpBB Forum Software package.
+ * Simple feed reader. An extension for the phpBB Forum Software package.
  *
  * @copyright (c) 2017, Ger, https://github.com/GerB
  * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
 
-namespace ger\simplerss\cron\task;
+namespace ger\feedpostbot\cron\task;
 
 /**
- * Simple RSS reader cron task.
+ * Feed post bot cron task.
  */
-class simplerss_cron extends \phpbb\cron\task\base
+class feedpostbot_cron extends \phpbb\cron\task\base
 {
 	/**
 	 * How often we run the cron (in seconds).
 	 * @var int
 	 */
-	protected $cron_frequency = 3600; // 1 hour
+	protected $cron_frequency = 1800; // 30 minutes
 
 	/** @var \phpbb\config\config */
 	protected $config;
 	
-	/** @var \ger\simplerss\classes\driver */
-	protected $simplerss;
+	/** @var \ger\feedpostbot\classes\driver */
+	protected $feedpostbot;
 
 	/**
 	 * Constructor
 	 *
 	 * @param \phpbb\config\config $config Config object
 	 */
-	public function __construct(\phpbb\config\config $config,  \ger\simplerss\classes\driver $simplerss)
+	public function __construct(\phpbb\config\config $config,  \ger\feedpostbot\classes\driver $feedpostbot)
 	{
 		$this->config = $config;
-		$this->simplerss = $simplerss;
+		$this->feedpostbot = $feedpostbot;
 	}
 
 	/**
@@ -46,11 +46,11 @@ class simplerss_cron extends \phpbb\cron\task\base
 	public function run()
 	{
 		// Run your cron actions here...
-		$this->simplerss->fetch_all();
+		$this->feedpostbot->fetch_all();
 
 		// Update the cron task run time here if it hasn't
 		// already been done by your cron actions.
-		$this->config->set('simplerss_cron_last_run', time(), false);
+		$this->config->set('feedpostbot_cron_last_run', time(), false);
 	}
 
 	/**
@@ -74,6 +74,6 @@ class simplerss_cron extends \phpbb\cron\task\base
 	 */
 	public function should_run()
 	{
-		return $this->config['simplerss_cron_last_run'] < (time() - $this->cron_frequency);
+		return $this->config['feedpostbot_cron_last_run'] < (time() - $this->cron_frequency);
 	}
 }

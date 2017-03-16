@@ -1,7 +1,7 @@
 {
-    "name": "ger/simplerss",
+    "name": "ger/feedpostbot",
     "type": "phpbb-extension",
-    "description": "Simple RSS reader that posts new items in your forum",
+    "description": "Simple feed reader that posts new items in your forum. Supports RSS, RDF and ATOM feeds",
     "homepage": "",
     "version": "1.0.0-dev",
     "time": "2017-02-24",
@@ -19,7 +19,7 @@
         "ext-simplexml" : "*"
     },
     "extra": {
-        "display-name": "Simple post bot",
+        "display-name": "Feed post bot",
         "soft-require": {
             "phpbb/phpbb": ">=3.1.4"
         }

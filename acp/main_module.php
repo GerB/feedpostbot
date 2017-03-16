@@ -1,17 +1,17 @@
 <?php
 /**
  *
- * Simple RSS reader. An extension for the phpBB Forum Software package.
+ * Feed post bot. An extension for the phpBB Forum Software package.
  *
  * @copyright (c) 2017, Ger, https://github.com/GerB
  * @license GNU General Public License, version 2 (GPL-2.0)
  *
  */
 
-namespace ger\simplerss\acp;
+namespace ger\feedpostbot\acp;
 
 /**
- * Simple RSS reader ACP module.
+ * Feed post bot ACP module.
  */
 class main_module
 {
@@ -21,23 +21,23 @@ class main_module
 	{
 		global $request, $template, $user, $phpbb_container;
 		$config_text = $phpbb_container->get('config_text');
-		$simplerss = $phpbb_container->get('ger.simplerss.classes.driver');
+		$feedpostbot = $phpbb_container->get('ger.feedpostbot.classes.driver');
 
-		$this->tpl_name		 = 'acp_simplerss_body';
-		$this->page_title	 = $user->lang('ACP_SIMPLERSS_TITLE');
-		add_form_key('ger/simplerss');
+		$this->tpl_name		 = 'acp_feedpostbot_body';
+		$this->page_title	 = $user->lang('ACP_FEEDPOSTBOT_TITLE');
+		add_form_key('ger/feedpostbot');
 
 		// Fetch current feeds
-		$current_state = $simplerss->current_state;
+		$current_state = $feedpostbot->current_state;
 		if ($request->is_set_post('run_all'))
 		{
-			$simplerss->fetch_all();
-			trigger_error($user->lang('ACP_SIMPLERSS_SETTING_SAVED').adm_back_link($this->u_action));
+			$feedpostbot->fetch_all();
+			trigger_error($user->lang('ACP_FEEDPOSTBOT_SETTING_SAVED').adm_back_link($this->u_action));
 
 		}
 		else if ($request->is_set_post('submit'))
 		{
-			if (!check_form_key('ger/simplerss'))
+			if (!check_form_key('ger/feedpostbot'))
 			{
 				trigger_error('FORM_INVALID');
 			}
@@ -65,7 +65,7 @@ class main_module
 						'guid' => '',
 					),
 				);
-				$config_text->set('ger_simple_rss_current_state', json_encode($current_state));
+				$config_text->set('ger_feedpostbot_current_state', json_encode($current_state));
 			}
 			else
 			{
@@ -87,15 +87,15 @@ class main_module
 						'latest' => $source['latest'],
 					);
 				}
-				$config_text->set('ger_simple_rss_current_state', json_encode($new_state));
+				$config_text->set('ger_feedpostbot_current_state', json_encode($new_state));
 			}
-			trigger_error($user->lang('ACP_SIMPLERSS_SETTING_SAVED').adm_back_link($this->u_action));
+			trigger_error($user->lang('ACP_FEEDPOSTBOT_SETTING_SAVED').adm_back_link($this->u_action));
 		}
 		else if ($request->variable('action', '') == 'delete')
 		{
 			$id = $request->variable('id', 0);
 			unset($current_state[$id]);
-			$config_text->set('ger_simple_rss_current_state', json_encode($current_state));
+			$config_text->set('ger_feedpostbot_current_state', json_encode($current_state));
 		}
 
 		// List current
@@ -115,13 +115,6 @@ class main_module
 					'S_CURDATE'	=> empty($source['curdate']) ? false : true,
 				));
 			}
-		}
-
-		// Check for MB string
-		if (!function_exists('mb_detect_encoding')) {
-			$template->assign_vars(array(
-				'NO_MB_STRING' => true,
-			));
 		}
 
 		$template->assign_vars(array(
