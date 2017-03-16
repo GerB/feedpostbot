@@ -1,4 +1,6 @@
-# Simple RSS reader
+# Feed Post Bot
+
+This phpBB extension enables you to read any RSS, ATOM or RDF feed. It looks for new items every half hour and post them to a specified forum.
 
 ## Installation
 
