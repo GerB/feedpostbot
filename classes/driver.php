@@ -296,7 +296,7 @@ class driver
 	 */
 	private function post_message($rss_item, $source_id)
 	{
-		if (empty($source_id) || empty($rss_item))
+		if (empty($rss_item))
 		{
 			return false;
 		}
