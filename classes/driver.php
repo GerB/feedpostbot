@@ -272,6 +272,10 @@ class driver
 	 */
 	private function is_handled($item, $current)
 	{
+		if ( (empty($current['link'])) && (empty($current['pubDate'])) && (empty($current['guid'])) )
+		{
+			return false;
+		}
 		if (isset($item['guid']) && ($this->prop_to_string($item['guid']) == $current['guid']))
 		{
 			return true;
