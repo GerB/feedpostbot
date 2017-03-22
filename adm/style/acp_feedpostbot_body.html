@@ -6,8 +6,9 @@
 
 <p>{L_ACP_SETTINGS_EXPLAIN}</p>
 <dl>
-	<dt><label>{L_NAME}{L_COLON}</label></dt><dd>{L_NAME_EXPLAIN}</dd>
 	<dt><label>{L_FEED_URL}{L_COLON}</label></dt><dd>{L_FEED_URL_EXPLAIN}</dd>
+	<dt><label>{L_FEED_TYPE}{L_COLON}</label></dt><dd>{L_FEED_TYPE_EXPLAIN}</dd>
+	<dt><label>{L_PREFIX}{L_COLON}</label></dt><dd>{L_PREFIX_EXPLAIN}</dd>
 	<dt><label>{L_ACP_FORUM_ID}{L_COLON}</label></dt><dd>{L_ACP_FORUM_ID_EXPLAIN}</dd>
 	<dt><label>{L_USER_ID}{L_COLON}</label></dt><dd>{L_USER_ID_EXPLAIN}</dd>
 	<dt><label>{L_TEXTLIMIT}{L_COLON}</label></dt><dd>{L_TEXTLIMIT_EXPLAIN}</dd>
@@ -41,8 +42,9 @@
 	<thead>
 	<tr>
 		<th>#</th>
-		<th>{L_NAME}</th>
 		<th style="width: 25%">{L_FEED_URL}</th>
+		<th>{L_FEED_TYPE}</th>                
+		<th>{L_PREFIX}</th>
 		<th>{L_ACP_FORUM_ID}</th>
 		<th>{L_USER_ID}</th>
 		<th>{L_TEXTLIMIT}</th>
@@ -56,8 +58,15 @@
 		<!-- BEGIN feeds -->
 		<tr>
 			<td>{feeds.ID}</td>
-			<td><input type="text" name="{feeds.ID}_name" value="{feeds.NAME}" style="width: 98%" /></td>
 			<td><input type="text" name="{feeds.ID}_url" value="{feeds.URL}" style="width: 98%" /></td>
+			<td style="text-align: center;">
+                            <select name="{feeds.ID}_type">
+                                <option value="rss"<!-- IF feeds.TYPE eq "rss" --> selected="selected"<!-- ENDIF -->>RSS</option>
+				<option value="atom"<!-- IF feeds.TYPE eq "atom" --> selected="selected"<!-- ENDIF -->>ATOM</option>
+				<option value="rdf"<!-- IF feeds.TYPE eq "rdf" --> selected="selected"<!-- ENDIF -->>RDF</option>
+                            </select>
+                        </td>
+			<td><input type="text" name="{feeds.ID}_prefix" value="{feeds.PREFIX}" style="width: 98%" /></td>
 			<td style="text-align: center;"><select name="{feeds.ID}_forum_id"><option value="0">{L_DISABLED}</option>{feeds.S_FORUMS}</select></td>
 			<td style="text-align: center;"><input type="number" min="0" name="{feeds.ID}_user_id" value="{feeds.USER_ID}" /></td>
 			<td style="text-align: center;"><input type="number" min="0" name="{feeds.ID}_textlimit" value="{feeds.TEXTLIMIT}" /></td>

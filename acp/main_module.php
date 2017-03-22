@@ -42,18 +42,23 @@ class main_module
 				trigger_error('FORM_INVALID');
 			}
 
-			// Is a new category added?
+			// Is a new feed added?
 			if ($request->is_set_post('add_feed'))
 			{
 				$url = $request->variable('add_feed', '', true);
 				if (!$this->validate_feed($current_state, $url))
 				{
-					trigger_error('L_FEED_URL_INVALID' . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('FEED_URL_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
-
+				$type = $feedpostbot->detect_feed_type($url);
+				if ($type === false)
+				{
+					trigger_error($user->lang('FEED_URL_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+				}
 				$current_state[] = array(
 					'url' => $url,
-					'name' => $url,
+					'type' => $type,
+					'prefix' => '',
 					'forum_id' => 0,
 					'user_id' => $user->data['user_id'],
 					'textlimit' => 0,
@@ -74,11 +79,12 @@ class main_module
 					$url = $request->variable($id.'_url', '');
 					if (!$this->validate_feed($current_state, $url, $id))
 					{
-						trigger_error('L_FEED_URL_INVALID');
+						trigger_error('FEED_URL_INVALID');
 					}
 					$new_state[$id] = array(
 						'url' => $url,
-						'name' => $request->variable($id.'_name', ''),
+						'type' => $request->variable($id.'_type', $current_state[$id]['type']),
+						'prefix' => $request->variable($id.'_prefix', ''),
 						'forum_id' => $request->variable($id.'_forum_id', 0),
 						'user_id' => $request->variable($id.'_user_id', $user->data['user_id']),
 						'textlimit' => $request->variable($id.'_textlimit', 0),
@@ -106,7 +112,8 @@ class main_module
 				$template->assign_block_vars('feeds', array(
 					'ID'		=> $id,
 					'URL'		=> $source['url'],
-					'NAME'		=> $source['name'],
+					'TYPE'		=> $source['type'],
+					'PREFIX'	=> $source['prefix'],
 					'U_DELETE'	=> $this->u_action . "&amp;action=delete&amp;id=".$id,
 					'S_FORUMS'	=> make_forum_select($source['forum_id'], false, false, false, false),
 					'USER_ID'	=> $source['user_id'],

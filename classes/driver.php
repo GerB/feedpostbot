@@ -52,25 +52,60 @@ class driver
 	public function init_current_state()
 	{
 		$ct = $this->config_text->get('ger_feedpostbot_current_state');
-		if (empty($ct))
+		if (empty($ct) || $ct === 'null')
 		{
 			$this->current_state = false;
 		}
 		else
 		{
-			// Legacy check for serialize function, instantly convert to JSON
+			/* Legacy check for serialize function, instantly convert to JSON
+			 * @date 2017-03-02
+			 */
+
 			$sertest = @unserialize($ct);
 			if ($sertest === false)
 			{
-				$this->current_state = json_decode($ct, true);
+				$decoded = json_decode($ct, true);
+				$fixed = $this->fixup_items($decoded);
+				$this->current_state = $fixed;
 			}
 			else
 			{
+				$sertest = $this->fixup_items($sertest);
 				$this->config_text->set('ger_feedpostbot_current_state', json_encode($sertest));
 				return $sertest;
 			}
 		}
 		return $this->current_state;
+	}
+
+	/**
+	 * Legacy conversion @date 2017-03-21
+	 * @param array $ct
+	 * @return array
+	 */
+	private function fixup_items($ct)
+	{
+		if (!is_array($ct))
+		{
+			return false;
+		}
+		foreach ($ct as $id => $source)
+		{
+			if (isset($source['type']))
+			{
+				$new_state[$id] = $source;
+			}
+			else
+			{
+				$new = $source;
+				$new['prefix'] = $source['name'];
+				$new['type'] = $this->detect_feed_type($source['url']);
+				unset($new['name']);
+				$new_state[$id] = $new;
+			}
+		}
+		return $new_state;
 	}
 
 	/**
@@ -89,7 +124,7 @@ class driver
 			// Only proceed if not disabled in ACP
 			if ($source['forum_id'] > 0)
 			{
-				$this->fetch_items($this->parse_feed($source['url'], $source['timeout']), $id);
+				$this->fetch_items($this->parse_feed($source['url'], $source['type'], $source['timeout']), $id);
 			}
 		}
 		$this->config_text->set('ger_feedpostbot_current_state', json_encode($this->current_state));
@@ -98,10 +133,11 @@ class driver
 	/**
 	 * Parse a feed
 	 * @param string $url
+	 * @param string $type
 	 * @param int $timeout
 	 * @return boolean
 	 */
-	private function parse_feed($url, $timeout = 3)
+	private function parse_feed($url, $type, $timeout = 3)
 	{
 		$opts['http']['timout'] = (int) $timeout;
 		$context = stream_context_create($opts);
@@ -113,18 +149,35 @@ class driver
 		}
 		else
 		{
+			$method = 'parse_'.$type;
+			return $this->$method($data, $url);
+		}
+	}
+
+	/**
+	 * Autodetect feed type
+	 */
+	public function detect_feed_type($url)
+	{
+		$data = file_get_contents($url);
+		if (!$data)
+		{
+			return false;
+		}
+		else
+		{
 			// Determine feed type and proceed accordingly
-			if ((stripos($data, 'application/atom+xml')!== false) || preg_match('/feed xmlns="(.+?)Atom"/i', $data))
+			if ((stripos($data, 'application/atom+xml')!== false) || preg_match('/xmlns="(.+?)Atom"/i', $data))
 			{
-				return $this->parse_atom($data, $url);
+				return 'atom';
 			}
 			else if (stripos($data, '<rdf:RDF') !== false)
 			{
-				return $this->parse_rdf($data, $url);
+				return 'rdf';
 			}
 			else
 			{
-				return $this->parse_rss($data, $url);
+				return 'rss';
 			}
 		}
 	}
@@ -312,6 +365,10 @@ class driver
 		// Make sure we have UTF-8 and handle HTML
 		$description = $rss_item['description'];
 		$title = $rss_item['title'];
+		if (!empty($this->current_state[$source_id]['prefix']))
+		{
+			$title = trim($this->current_state[$source_id]['prefix']) . ' ' . $title;
+		}
 
 		// Only show excerpt of feed if a text limit is given, but make it nice
 		if (!empty($this->current_state[$source_id]['textlimit']))
