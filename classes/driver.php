@@ -294,7 +294,7 @@ class driver
 			{
 				// We've had this one and all below
 				$this->current_state[$source_id]['latest'] = $new_latest;
-				return;
+				break;
 			}
 			else
 			{
@@ -329,7 +329,7 @@ class driver
 		{
 			return false;
 		}
-		if (isset($item['guid']) && ($this->prop_to_string($item['guid']) == $current['guid']))
+		if (!empty($item['guid']) && ($this->prop_to_string($item['guid']) == $current['guid']))
 		{
 			return true;
 		}
