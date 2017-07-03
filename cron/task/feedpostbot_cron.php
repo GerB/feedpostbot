@@ -19,7 +19,7 @@ class feedpostbot_cron extends \phpbb\cron\task\base
 	 * How often we run the cron (in seconds).
 	 * @var int
 	 */
-	protected $cron_frequency = 1800; // 30 minutes
+	protected $cron_frequency = 1800; // Default to 30 minutes
 
 	/** @var \phpbb\config\config */
 	protected $config;
@@ -35,6 +35,7 @@ class feedpostbot_cron extends \phpbb\cron\task\base
 	public function __construct(\phpbb\config\config $config,  \ger\feedpostbot\classes\driver $feedpostbot)
 	{
 		$this->config = $config;
+        $this->cron_frequency = $config['feedpostbot_cron_frequency'];
 		$this->feedpostbot = $feedpostbot;
 	}
 

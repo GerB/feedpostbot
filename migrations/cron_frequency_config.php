@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * Move cron frequency to config item
+ * Move cron frequency to config item instead of hardcoded
  *
  * @copyright (c) 2017, Ger, https://github.com/GerB
  * @license GNU General Public License, version 2 (GPL-2.0)

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * Simple RSS reader. An extension for the phpBB Forum Software package.
+ * Feed post bot. An extension for the phpBB Forum Software package.
  *
  * @copyright (c) 2017, Ger, https://github.com/GerB
  * @license GNU General Public License, version 2 (GPL-2.0)

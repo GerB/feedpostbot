@@ -34,6 +34,7 @@ class main_module
 			$feedpostbot->fetch_all();
 			trigger_error($user->lang('ACP_FEEDPOSTBOT_SETTING_SAVED').adm_back_link($this->u_action));
 		}
+        // Set main config. Might be expanded in the future
 		else if ($request->is_set_post('set_config'))
         {
 			if (!check_form_key('ger/feedpostbot'))
