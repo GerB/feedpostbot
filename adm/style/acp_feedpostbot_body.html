@@ -15,6 +15,13 @@
 	<dt><label>{L_TIMEOUT}{L_COLON}</label></dt><dd>{L_TIMEOUT_EXPLAIN}</dd>
 	<dt><label>{L_CURDATE}{L_COLON}</label></dt><dd>{L_CURDATE_EXPLAIN}</dd>
 </dl>
+<form id="config" method="post" action="{U_ACTION}">
+    <fieldset>
+        {L_CRON_FREQUENCY}{L_COLON} <input type="number" name="cron_frequency" value="{CRON_FREQUENCY}" /> <input class="button1" type="submit" name="set_config" value="{L_SUBMIT}" />
+        {S_FORM_TOKEN}
+    </fieldset>
+    
+</form>
 <form id="run_all" method="post" action="{U_ACTION}">
     <fieldset>
         {L_FETCH_ALL_FEEDS}{L_COLON} <input class="button1" type="submit" name="run_all" value="{L_SUBMIT}" />

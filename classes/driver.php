@@ -58,23 +58,7 @@ class driver
 		}
 		else
 		{
-			/* Legacy check for serialize function, instantly convert to JSON
-			 * @date 2017-03-02
-			 */
-
-			$sertest = @unserialize($ct);
-			if ($sertest === false)
-			{
-				$decoded = json_decode($ct, true);
-				$fixed = $this->fixup_items($decoded);
-				$this->current_state = $fixed;
-			}
-			else
-			{
-				$sertest = $this->fixup_items($sertest);
-				$this->config_text->set('ger_feedpostbot_current_state', json_encode($sertest));
-				return $sertest;
-			}
+            $this->current_state = json_decode($ct, true);
 		}
 		return $this->current_state;
 	}

@@ -24,6 +24,7 @@ $lang = array_merge($lang, array(
 	'ACP_SFEEDPOSTBOT_SETTING_SAVED'	=> 'Feed post bot settings saved',
 	'ACP_FEEDPOSTBOT_TITLE'			=> 'Feed post bot',
 	'ADD_FEED'						=> 'Add feed',
+    'CRON_FREQUENCY'				=> 'Interval for processing feeds (seconds)',
 	'CURDATE'						=> 'Local date/time',
 	'CURDATE_EXPLAIN'				=> 'Check to use the feed fetch time as post time. Uncheck to use the feed PubDate as post time.',
 	'FETCH_ALL_FEEDS'				=> 'Fetch all feeds manually',

@@ -25,6 +25,7 @@ $lang = array_merge($lang, array(
 	'ACP_FEEDPOSTBOT_SETTING_SAVED'	=> 'Feed post bot instellingen opgeslagen',
 	'ACP_FEEDPOSTBOT_TITLE'			=> 'Feed post bot',
 	'ADD_FEED'						=> 'Feed toevoegen',
+	'CRON_FREQUENCY'				=> 'Interval voor het ophalen van feeds (in seconden)',
 	'CURDATE'						=> 'Lokale datum/tijd',
 	'CURDATE_EXPLAIN'				=> 'Vink aan om moment van verwerken als berichttijd op te slaan. Laat uit om de publicatiedatum van de feed als berichttijd op te slaan.',
 	'FETCH_ALL_FEEDS'				=> 'Verwerk alle feeds handmatig',

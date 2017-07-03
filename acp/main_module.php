@@ -19,7 +19,7 @@ class main_module
 
 	public function main($id, $mode)
 	{
-		global $request, $template, $user, $phpbb_container;
+		global $request, $template, $user, $phpbb_container, $config;
 		$config_text = $phpbb_container->get('config_text');
 		$feedpostbot = $phpbb_container->get('ger.feedpostbot.classes.driver');
 
@@ -33,8 +33,16 @@ class main_module
 		{
 			$feedpostbot->fetch_all();
 			trigger_error($user->lang('ACP_FEEDPOSTBOT_SETTING_SAVED').adm_back_link($this->u_action));
-
 		}
+		else if ($request->is_set_post('set_config'))
+        {
+			if (!check_form_key('ger/feedpostbot'))
+			{
+				trigger_error('FORM_INVALID');
+			}
+            $config->set('feedpostbot_cron_frequency', $request->variable('cron_frequency', 0));
+            trigger_error($user->lang('ACP_FEEDPOSTBOT_SETTING_SAVED').adm_back_link($this->u_action));
+        }
 		else if ($request->is_set_post('submit'))
 		{
 			if (!check_form_key('ger/feedpostbot'))
@@ -125,6 +133,7 @@ class main_module
 		}
 
 		$template->assign_vars(array(
+			'CRON_FREQUENCY' => $config['feedpostbot_cron_frequency'],
 			'U_ADD_ACTION' => $this->u_action . "&amp;action=add",
 		));
 	}
