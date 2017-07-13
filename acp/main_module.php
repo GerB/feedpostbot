@@ -73,6 +73,7 @@ class main_module
 					'textlimit' => 0,
 					'timeout' => 3,
 					'curdate' => 0,
+					'append_link' => 1,
 					'latest' => array(
 						'link' => '',
 						'pubDate' => '',
@@ -99,6 +100,7 @@ class main_module
 						'textlimit' => $request->variable($id.'_textlimit', 0),
 						'timeout' => $request->variable($id.'_timeout', 3),
 						'curdate' => strlen($request->variable($id . '_curdate', '')) > 0 ? 1 : 0,
+						'append_link' => strlen($request->variable($id . '_append_link', '')) > 0 ? 1 : 0,
 						'latest' => $source['latest'],
 					);
 				}
@@ -129,6 +131,7 @@ class main_module
 					'TEXTLIMIT'	=> $source['textlimit'],
 					'TIMEOUT'	=> $source['timeout'],
 					'S_CURDATE'	=> empty($source['curdate']) ? false : true,
+					'S_APPEND_LINK'	=> empty($source['append_link']) ? false : true,
 				));
 			}
 		}

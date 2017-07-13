@@ -14,6 +14,7 @@
 	<dt><label>{L_TEXTLIMIT}{L_COLON}</label></dt><dd>{L_TEXTLIMIT_EXPLAIN}</dd>
 	<dt><label>{L_TIMEOUT}{L_COLON}</label></dt><dd>{L_TIMEOUT_EXPLAIN}</dd>
 	<dt><label>{L_CURDATE}{L_COLON}</label></dt><dd>{L_CURDATE_EXPLAIN}</dd>
+	<dt><label>{L_APPEND_LINK}{L_COLON}</label></dt><dd>{L_APPEND_LINK_EXPLAIN}</dd>
 </dl>
 <form id="config" method="post" action="{U_ACTION}">
     <fieldset>
@@ -34,6 +35,7 @@
 		<p>{ERROR_MSG}</p>
 	</div>
 <!-- ENDIF -->
+<h2>{L_FEEDS}</h2>
 <form id="add_source" method="post" action="{U_ADD_ACTION}">
 	<fieldset>
 		{L_ADD_FEED}{L_COLON} <input type="text" name="add_feed" value="" /> <input class="button1" type="submit" name="submit" value="{L_SUBMIT}" />
@@ -44,7 +46,7 @@
 <form id="manage_feeds" method="post" action="{U_MANAGE_ACTION}">
 					                                        
 	<table class="table1">
-		<col class="col1" /><col class="col2" /><col class="col2" /><col class="col2" /><col class="col2" /><col class="col2" /><col class="col2" /><col class="col2" /><col class="col2" />
+		<col class="col1" /><col class="col2" /><col class="col2" /><col class="col2" /><col class="col2" /><col class="col2" /><col class="col2" /><col class="col2" /><col class="col2" /><col class="col2" />
 	<thead>
 	<tr>
 		<th>#</th>
@@ -56,6 +58,7 @@
 		<th>{L_TEXTLIMIT}</th>
 		<th>{L_TIMEOUT}</th>
 		<th>{L_CURDATE}</th>
+		<th>{L_APPEND_LINK}</th>
 		<th>{L_ACTION}</th>
 	</tr>
 	</thead>
@@ -78,7 +81,8 @@
 			<td style="text-align: center;"><input type="number" min="0" name="{feeds.ID}_textlimit" value="{feeds.TEXTLIMIT}" /></td>
 			<td style="text-align: center;"><input type="number" min="0" name="{feeds.ID}_timeout" value="{feeds.TIMEOUT}" /></td>
 			<td style="text-align: center;"><label><input type="checkbox" class="radio" name="{feeds.ID}_curdate"<!-- IF feeds.S_CURDATE --> checked="checked"<!-- ENDIF --> /> {L_CURDATE}</label></td>
-			<td style="text-align: center;"><a href="{feeds.U_DELETE}" data-ajax="row_delete">{L_DELETE}</a></td>
+			<td style="text-align: center;"><label><input type="checkbox" class="radio" name="{feeds.ID}_append_link"<!-- IF feeds.S_APPEND_LINK --> checked="checked"<!-- ENDIF --> /> {L_APPEND_LINK}</label></td>
+			<td style="text-align: center;"><a href="{feeds.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a></td>
 		</tr>
 		<!-- END feeds -->
 	<!-- ELSE -->

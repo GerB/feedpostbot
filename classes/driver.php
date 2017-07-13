@@ -60,38 +60,33 @@ class driver
 		{
             $this->current_state = json_decode($ct, true);
 		}
+        $this->check_state_parameters();
 		return $this->current_state;
 	}
 
-	/**
-	 * Legacy conversion @date 2017-03-21
-	 * @param array $ct
-	 * @return array
-	 */
-	private function fixup_items($ct)
-	{
-		if (!is_array($ct))
-		{
-			return false;
-		}
-		foreach ($ct as $id => $source)
-		{
-			if (isset($source['type']))
+    /**
+     * Make sure we have all parameters set
+     */
+    private function check_state_parameters()
+    {
+        $new_state = [];
+        foreach($this->current_state as $id => $source)
+        {
+            if (isset($source['append_link']))
 			{
 				$new_state[$id] = $source;
 			}
-			else
-			{
+            else
+            {
 				$new = $source;
-				$new['prefix'] = $source['name'];
-				$new['type'] = $this->detect_feed_type($source['url']);
-				unset($new['name']);
+				$new['append_link'] = 1;
 				$new_state[$id] = $new;
-			}
-		}
-		return $new_state;
-	}
-
+            }
+        }
+        $this->current_state = $new_state;
+        $this->config_text->set('ger_feedpostbot_current_state', json_encode($new_state));
+    }
+    
 	/**
 	 * Fetch all feeds
 	 * This is called by the cron handler
@@ -358,11 +353,18 @@ class driver
 		if (!empty($this->current_state[$source_id]['textlimit']))
 		{
 			$post_text = $this->html2bbcode($this->closetags($this->character_limiter($description, $this->current_state[$source_id]['textlimit'])));
-			$post_text .= "\n\n" . '[url=' . $rss_item['link'] . ']' . $this->user->lang('READ_MORE') . '[/url]';
+            if (!empty($this->current_state[$source_id]['append_link']))
+            {
+                $post_text .= "\n\n" . '[url=' . $rss_item['link'] . ']' . $this->user->lang('READ_MORE') . '[/url]';
+            }
 		}
 		else
 		{
-			$post_text = $this->html2bbcode($description) . "\n\n" . $rss_item['link'];
+			$post_text = $this->html2bbcode($description);
+            if (!empty($this->current_state[$source_id]['append_link']))
+            {
+                $post_text .= "\n\n" . $rss_item['link'];
+            }
 		}
 
 		$poll = $uid = $bitfield = $options = '';
