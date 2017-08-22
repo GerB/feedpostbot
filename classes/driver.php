@@ -407,6 +407,10 @@ class driver
 	 */
 	private function prop_to_string($prop)
 	{
+        if (empty($prop))
+        {
+            return '';
+        }
 		if (!is_string($prop))
 		{
 			// Most probaly a SimpleXMLElement
