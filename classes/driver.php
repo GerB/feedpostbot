@@ -59,9 +59,9 @@ class driver
 		else
 		{
             $this->current_state = json_decode($ct, true);
-		}
-        $this->check_state_parameters();
-		return $this->current_state;
+            $this->check_state_parameters();
+        }
+        return $this->current_state;
 	}
 
     /**
