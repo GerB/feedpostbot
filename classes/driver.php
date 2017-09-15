@@ -363,7 +363,7 @@ class driver
 			$post_text = $this->html2bbcode($description);
             if (!empty($this->current_state[$source_id]['append_link']))
             {
-                $post_text .= "\n\n" . $this->user->lang('SOURCE') . ' ' .  $rss_item['link'];
+                $post_text .= "\n\n" . $this->user->lang('SOURCE') . ' [url]' .  $rss_item['link'] . '[/url]';
             }
 		}
 
