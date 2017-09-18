@@ -2,6 +2,8 @@
 
 This phpBB extension enables you to read any RSS, ATOM or RDF feed. It looks for new items every half hour and post them to a specified forum.
 
+Information about features and extending this extension can be found in [this thread on phpBB.com](https://www.phpbb.com/community/viewtopic.php?f=456&t=2411596)
+
 ## Installation
 
 * Copy the contents of the extension to phpBB/ext/ger/feedpostbot
