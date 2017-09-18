@@ -20,6 +20,7 @@ class driver
 	protected $db;
 	protected $log;
 	protected $phpbb_root_path;
+	protected $phpbb_dispatcher;
 	public $current_state;
 
 	/**
@@ -32,8 +33,9 @@ class driver
 	 * @param \phpbb\auth\auth							$auth					Auth object
 	 * @param \phpbb\dbal								$db						DB object
 	 * @param string									$phpbb_root_path
+	 * @param \phpbb\event\dispatcher					$phpbb_dispatcher
 	 */
-	public function __construct(\phpbb\config\config $config,  \phpbb\config\db_text $config_text, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\log\log $log, $phpbb_root_path)
+	public function __construct(\phpbb\config\config $config,  \phpbb\config\db_text $config_text, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\log\log $log, $phpbb_root_path, \phpbb\event\dispatcher $phpbb_dispatcher)
 	{
 		$this->config = $config;
 		$this->config_text = $config_text;
@@ -42,6 +44,7 @@ class driver
 		$this->db = $db;
 		$this->log = $log;
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->phpbb_dispatcher = $phpbb_dispatcher;
 
 		$this->init_current_state();
 	}
@@ -176,13 +179,27 @@ class driver
 
 		foreach($content->entry as $item)
 		{
-			$return[] = array(
+			$append = array(
 				'guid' => $this->prop_to_string($item->id),
 				'title' => $this->prop_to_string($item->title),
 				'link' => $this->prop_to_string($item->link->attributes()->href),
 				'description' =>  empty($item->content) ? ( empty($item->summary) ? $this->prop_to_string($item->title) : $this->prop_to_string($item->summary) ) : $this->prop_to_string($item->content),
 				'pubDate' => empty($item->updated) ? 0 : $this->prop_to_string($item->updated),
 			);
+                    
+            /**
+            * Modify the fetched ATOM item before it's added to the return list
+            *
+            * @event ger.feedpostbot.parse_atom_append
+            * @var  object item  item as found in source
+            * @var  array  append Array of properties to be send to the post_message function
+            * @since 1.0.1
+            */
+            $vars = array('item', 'append');
+            extract($this->phpbb_dispatcher->trigger_event('ger.feedpostbot.parse_atom_append', compact($vars)));      
+
+            // Add it to the list
+            $return[] = $append;
 		}
 
 		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_FETCHED', time(), array($url));
@@ -207,12 +224,26 @@ class driver
 
 		foreach($content->item as $item)
 		{
-			$return[] = array(
+			$append = array(
 				'title' => $this->prop_to_string($item->title),
 				'link' => $this->prop_to_string($item->link),
 				'description' =>  empty($item->description) ? $this->prop_to_string($item->title) : $this->prop_to_string($item->description),
 				'pubDate' => empty($item->date) ? ( empty($content->channel->date) ? 0 : $this->prop_to_string($content->channel->date) ) : $this->prop_to_string($item->date), // Fallback galore
 			);
+        
+            /**
+            * Modify the fetched RDF item before it's added to the return list
+            *
+            * @event ger.feedpostbot.parse_rdf_append
+            * @var  object item  item as found in source
+            * @var  array  append Array of properties to be send to the post_message function
+            * @since 1.0.1
+            */
+            $vars = array('item', 'append');
+            extract($this->phpbb_dispatcher->trigger_event('ger.feedpostbot.parse_rdf_append', compact($vars)));      
+
+            // Add it to the list
+            $return[] = $append;            
 		}
 		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_FETCHED', time(), array($url));
 		return $return;
@@ -232,13 +263,27 @@ class driver
 		}
 		foreach($content->channel->item as $item)
 		{
-			$return[] = array(
+            $append = array(
 				'guid' => $this->prop_to_string($item->guid),
 				'title' => $this->prop_to_string($item->title),
 				'link' => $this->prop_to_string($item->link),
 				'description' =>  empty($item->description) ? $this->prop_to_string($item->title) : $this->prop_to_string($item->description),
 				'pubDate' => $this->prop_to_string($item->pubDate),
 			);
+        
+            /**
+            * Modify the fetched RSS item before it's added to the return list
+            *
+            * @event ger.feedpostbot.parse_rss_append
+            * @var  object item  item as found in source
+            * @var  array  append Array of properties to be send to the post_message function
+            * @since 1.0.1
+            */
+            $vars = array('item', 'append');
+            extract($this->phpbb_dispatcher->trigger_event('ger.feedpostbot.parse_rss_append', compact($vars)));      
+
+            // Add it to the list
+            $return[] = $append;
 		}
 		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_FETCHED', time(), array($url));
 		return $return;
@@ -396,8 +441,19 @@ class driver
 			'enable_indexing'	 => true, // Allow indexing the post? (bool)    // 3.0.6
 			'force_visibility'	 => true, // 3.1.x: Allow the post to be submitted without going into unapproved queue, or make it be deleted (replaces force_approved_state)
 		);
+        
+        /**
+        * Modify the post data array before post is submitted
+        *
+        * @event ger.feedpostbot.submit_post_before
+        * @var  array  data  Data array send to the submit_post function
+        * @var  array  rss_item  Complete feed item as fetched by parse_{method}
+        * @since 1.0.1
+        */
+        $vars = array('data', 'rss_item');
+        extract($this->phpbb_dispatcher->trigger_event('ger.feedpostbot.submit_post_before', compact($vars)));
 
-		return submit_post('post', $title, $this->user->data['username'], POST_NORMAL, $poll, $data);
+		return submit_post('post', $data['title'], $this->user->data['username'], POST_NORMAL, $poll, $data);
 	}
 
 	/**

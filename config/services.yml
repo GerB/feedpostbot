@@ -9,6 +9,7 @@ services:
             - '@dbal.conn'
             - '@log'
             - '%core.root_path%'
+            - '@dispatcher'
     
     ger.feedpostbot.cron.task.feedpostbot_cron:
         class: ger\feedpostbot\cron\task\feedpostbot_cron
