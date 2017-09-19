@@ -453,7 +453,7 @@ class driver
         $vars = array('data', 'rss_item');
         extract($this->phpbb_dispatcher->trigger_event('ger.feedpostbot.submit_post_before', compact($vars)));
 
-		return submit_post('post', $data['title'], $this->user->data['username'], POST_NORMAL, $poll, $data);
+		return submit_post('post', $data['topic_title'], $this->user->data['username'], POST_NORMAL, $poll, $data);
 	}
 
 	/**
