@@ -121,6 +121,9 @@ class driver
 	 */
 	private function parse_feed($url, $type, $timeout = 3)
 	{
+        // Don't throw errors but log them instead
+        libxml_use_internal_errors(true);
+
 		$opts['http']['timout'] = (int) $timeout;
 		$context = stream_context_create($opts);
 		$data = @file_get_contents($url, false, $context); // Suppress errors
@@ -174,6 +177,7 @@ class driver
 		$content = simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NOCDATA);
 		if ($content === false)
 		{
+            $this->log_xml_error($url);
 			return false;
 		}
 
@@ -215,10 +219,11 @@ class driver
 	{
 		// RDF default hasn't dates. Most use a DC or SY namespace but SimpleXML doesn't handle those
 		$find = array('dc:date>', 'sy:date>');
-
+        
 		$content = simplexml_load_string(str_replace($find, 'date>', $data), 'SimpleXMLElement', LIBXML_NOCDATA);
 		if ($content === false)
 		{
+            $this->log_xml_error($url);
 			return false;
 		}
 
@@ -256,9 +261,10 @@ class driver
 	 */
 	private function parse_rss($data, $url)
 	{
-		$content = simplexml_load_string(($data), 'SimpleXMLElement', LIBXML_NOCDATA);
+		$content = simplexml_load_string($data, 'SimpleXMLElement', LIBXML_NOCDATA);
 		if ($content === false)
 		{
+            $this->log_xml_error($url);
 			return false;
 		}
 		foreach($content->channel->item as $item)
@@ -612,4 +618,24 @@ class driver
 		// Replace main stuff and strip anything else
 		return strip_tags(preg_replace(array_keys($convert), array_values($convert), $html_string));
 	}
+    
+    /**
+     * Log xml error messages and clear
+     * @param string $url
+     * @return void
+     */
+    private function log_xml_error($url)
+    {
+        // Create a simple list of found errors
+        $xml_errors = '';
+        foreach( libxml_get_errors() as $error ) 
+        {
+            $xml_errors .= $error->message . '\n';
+        }
+        $this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_ERROR', time(), array($url, $xml_errors));
+        
+        // Clear libxml error buffer
+        libxml_clear_errors();
+        return;
+    }
 }

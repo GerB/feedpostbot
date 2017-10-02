@@ -36,6 +36,7 @@ $lang = array_merge($lang, array(
 	'FEED_URL_EXPLAIN'				=> 'The URL to the actual feed, e.g. <code>https://www.phpbb.com/feeds/rss/</code>. Each feed URL should be unique',
 	'FEED_URL_INVALID'				=> 'Invalid feed URL. This may be the result of a duplicate in your feed list or simply an URL that does not meet the specifications',
     'FEEDS'                         => 'Feeds',
+	'LOG_FEED_ERROR'				=> 'XML error in feed source<br />» %s',
 	'LOG_FEED_FETCHED'				=> 'Feed fetched<br />» %s',
 	'LOG_FEED_TIMEOUT'				=> 'Feed timeout reached<br />» %s',
 	'PREFIX'						=> 'Topic prefix',
