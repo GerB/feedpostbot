@@ -388,7 +388,7 @@ class driver
 
 		// Make sure we have UTF-8 and handle HTML
 		$description = $rss_item['description'];
-		$title = $rss_item['title'];
+		$title = utf8_clean_string($rss_item['title']);
 		if (!empty($this->current_state[$source_id]['prefix']))
 		{
 			$title = trim($this->current_state[$source_id]['prefix']) . ' ' . $title;
