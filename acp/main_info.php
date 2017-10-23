@@ -19,12 +19,12 @@ class main_info
 	{
 		return array(
 			'filename'	=> '\ger\feedpostbot\acp\main_module',
-			'title'		=> 'ACP_FEEDPOSTBOT_TITLE',
+			'title'		=> 'FPB_ACP_FEEDPOSTBOT_TITLE',
 			'modes'		=> array(
 				'settings'	=> array(
-					'title'	=> 'ACP_FEEDPOSTBOT_TITLE',
+					'title'	=> 'FPB_ACP_FEEDPOSTBOT_TITLE',
 					'auth'	=> 'ext_ger/feedpostbot && acl_a_board',
-					'cat'	=> array('ACP_FEEDPOSTBOT_TITLE')
+					'cat'	=> array('FPB_ACP_FEEDPOSTBOT_TITLE')
 				),
 			),
 		);

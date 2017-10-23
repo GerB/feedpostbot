@@ -24,7 +24,7 @@ class main_module
 		$feedpostbot = $phpbb_container->get('ger.feedpostbot.classes.driver');
 
 		$this->tpl_name		 = 'acp_feedpostbot_body';
-		$this->page_title	 = $user->lang('ACP_FEEDPOSTBOT_TITLE');
+		$this->page_title	 = $user->lang('FPB_ACP_FEEDPOSTBOT_TITLE');
 		add_form_key('ger/feedpostbot');
 
 		// Fetch current feeds
@@ -32,7 +32,7 @@ class main_module
 		if ($request->is_set_post('run_all'))
 		{
 			$feedpostbot->fetch_all();
-			trigger_error($user->lang('ACP_FEEDPOSTBOT_SETTING_SAVED').adm_back_link($this->u_action));
+			trigger_error($user->lang('FPB_ACP_FEEDPOSTBOT_SETTING_SAVED').adm_back_link($this->u_action));
 		}
         // Set main config. Might be expanded in the future
 		else if ($request->is_set_post('set_config'))
@@ -42,7 +42,7 @@ class main_module
 				trigger_error('FORM_INVALID');
 			}
             $config->set('feedpostbot_cron_frequency', $request->variable('cron_frequency', 0));
-            trigger_error($user->lang('ACP_FEEDPOSTBOT_SETTING_SAVED').adm_back_link($this->u_action));
+            trigger_error($user->lang('FPB_ACP_FEEDPOSTBOT_SETTING_SAVED').adm_back_link($this->u_action));
         }
 		else if ($request->is_set_post('submit'))
 		{
@@ -57,12 +57,12 @@ class main_module
 				$url = $request->variable('add_feed', '', true);
 				if (!$this->validate_feed($current_state, $url))
 				{
-					trigger_error($user->lang('FEED_URL_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('FPB_FEED_URL_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 				$type = $feedpostbot->detect_feed_type($url);
 				if ($type === false)
 				{
-					trigger_error($user->lang('FEED_URL_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang('FPB_FEED_URL_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 				$current_state[] = array(
 					'url' => $url,
@@ -84,12 +84,13 @@ class main_module
 			}
 			else
 			{
+                $new_state = [];
 				foreach ($current_state as $id => $source)
 				{
 					$url = $request->variable($id.'_url', '');
 					if (!$this->validate_feed($current_state, $url, $id))
 					{
-						trigger_error('FEED_URL_INVALID');
+						trigger_error('FPB_FEED_URL_INVALID');
 					}
 					$new_state[$id] = array(
 						'url' => $url,
@@ -106,10 +107,14 @@ class main_module
 				}
 				$config_text->set('ger_feedpostbot_current_state', json_encode($new_state));
 			}
-			trigger_error($user->lang('ACP_FEEDPOSTBOT_SETTING_SAVED').adm_back_link($this->u_action));
+			trigger_error($user->lang('FPB_ACP_FEEDPOSTBOT_SETTING_SAVED').adm_back_link($this->u_action));
 		}
 		else if ($request->variable('action', '') == 'delete')
 		{
+            if (!check_form_key('ger/feedpostbot'))
+			{
+				trigger_error('FORM_INVALID');
+			}
 			$id = $request->variable('id', 0);
 			unset($current_state[$id]);
 			$config_text->set('ger_feedpostbot_current_state', json_encode($current_state));
@@ -150,7 +155,6 @@ class main_module
 	 */
 	private function validate_feed($current_state, $url, $id = null)
 	{
-//		var_dump($current_state, $url, $id);
 		if (filter_var($url, FILTER_VALIDATE_URL) === false)
 		{
 			return false;

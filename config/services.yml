@@ -9,6 +9,7 @@ services:
             - '@dbal.conn'
             - '@log'
             - '%core.root_path%'
+            - '%core.php_ext%'
             - '@dispatcher'
     
     ger.feedpostbot.cron.task.feedpostbot_cron:

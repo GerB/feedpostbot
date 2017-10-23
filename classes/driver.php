@@ -20,6 +20,7 @@ class driver
 	protected $db;
 	protected $log;
 	protected $phpbb_root_path;
+	protected $php_ext;
 	protected $phpbb_dispatcher;
 	public $current_state;
 
@@ -31,11 +32,12 @@ class driver
 	 * @param \phpbb\request\request_interface			$request				Request object
 	 * @param \phpbb\user								$user					User object
 	 * @param \phpbb\auth\auth							$auth					Auth object
-	 * @param \phpbb\dbal								$db						DB object
+	 * @param \phpbb\db\driver\driver_interface			$db						DB object
 	 * @param string									$phpbb_root_path
+	 * @param string									$php_ext
 	 * @param \phpbb\event\dispatcher					$phpbb_dispatcher
 	 */
-	public function __construct(\phpbb\config\config $config,  \phpbb\config\db_text $config_text, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\log\log $log, $phpbb_root_path, \phpbb\event\dispatcher $phpbb_dispatcher)
+	public function __construct(\phpbb\config\config $config,  \phpbb\config\db_text $config_text, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\log\log $log, $phpbb_root_path, $php_ext, \phpbb\event\dispatcher $phpbb_dispatcher)
 	{
 		$this->config = $config;
 		$this->config_text = $config_text;
@@ -44,6 +46,7 @@ class driver
 		$this->db = $db;
 		$this->log = $log;
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 
 		$this->init_current_state();
@@ -385,16 +388,16 @@ class driver
 		}
 		if (!function_exists('generate_text_for_storage'))
 		{
-			include($this->phpbb_root_path . 'includes/functions_content.php');
+			include($this->phpbb_root_path . 'includes/functions_content.' . $this->php_ext);
 		}
 		if (!function_exists('submit_post'))
 		{
-			include($this->phpbb_root_path . 'includes/functions_posting.php');
+			include($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
 		}
 
 		// Make sure we have UTF-8 and handle HTML
 		$description = $rss_item['description'];
-		$title = utf8_clean_string($rss_item['title']);
+		$title = $this->clean_title($rss_item['title']);
 		if (!empty($this->current_state[$source_id]['prefix']))
 		{
 			$title = trim($this->current_state[$source_id]['prefix']) . ' ' . $title;
@@ -406,7 +409,7 @@ class driver
 			$post_text = $this->html2bbcode($this->closetags($this->character_limiter($description, $this->current_state[$source_id]['textlimit'])));
             if (!empty($this->current_state[$source_id]['append_link']))
             {
-                $post_text .= "\n\n" . '[url=' . $rss_item['link'] . ']' . $this->user->lang('READ_MORE') . '[/url]';
+                $post_text .= "\n\n" . '[url=' . $rss_item['link'] . ']' . $this->user->lang('FPB_READ_MORE') . '[/url]';
             }
 		}
 		else
@@ -414,7 +417,7 @@ class driver
 			$post_text = $this->html2bbcode($description);
             if (!empty($this->current_state[$source_id]['append_link']))
             {
-                $post_text .= "\n\n" . $this->user->lang('SOURCE') . ' [url]' .  $rss_item['link'] . '[/url]';
+                $post_text .= "\n\n" . $this->user->lang('FPB_SOURCE') . ' [url]' .  $rss_item['link'] . '[/url]';
             }
 		}
 
@@ -483,6 +486,16 @@ class driver
 		return html_entity_decode($prop);
 	}
 
+    /**
+     * Ditch emojis from title
+     * @param string $string
+     * @return string
+     */
+    private function clean_title($string)
+    {
+         return trim(preg_replace('/[\x{10000}-\x{10FFFF}]/u', " ", $string));
+    }
+    
 	/**
 	 * Switch to the RSS source user
 	 * @param int $new_user_id

@@ -30,11 +30,11 @@ class install_feedpostbot extends \phpbb\db\migration\migration
 			array('module.add', array(
 				'acp',
 				'ACP_CAT_DOT_MODS',
-				'ACP_FEEDPOSTBOT_TITLE'
+				'FPB_ACP_FEEDPOSTBOT_TITLE'
 			)),
 			array('module.add', array(
 				'acp',
-				'ACP_FEEDPOSTBOT_TITLE',
+				'FPB_ACP_FEEDPOSTBOT_TITLE',
 				array(
 					'module_basename'	=> '\ger\feedpostbot\acp\main_module',
 					'modes'				=> array('settings'),
