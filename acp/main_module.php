@@ -111,10 +111,10 @@ class main_module
 		}
 		else if ($request->variable('action', '') == 'delete')
 		{
-            if (!check_form_key('ger/feedpostbot'))
-			{
-				trigger_error('FORM_INVALID');
-			}
+//            if (!check_form_key('ger/feedpostbot'))
+//			{
+//				trigger_error('FORM_INVALID');
+//			}
 			$id = $request->variable('id', 0);
 			unset($current_state[$id]);
 			$config_text->set('ger_feedpostbot_current_state', json_encode($current_state));
