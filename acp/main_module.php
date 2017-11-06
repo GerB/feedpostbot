@@ -111,13 +111,20 @@ class main_module
 		}
 		else if ($request->variable('action', '') == 'delete')
 		{
-//            if (!check_form_key('ger/feedpostbot'))
-//			{
-//				trigger_error('FORM_INVALID');
-//			}
-			$id = $request->variable('id', 0);
-			unset($current_state[$id]);
-			$config_text->set('ger_feedpostbot_current_state', json_encode($current_state));
+            if (confirm_box(true))
+            {
+                $id = $request->variable('id', 0);
+                unset($current_state[$id]);
+                $config_text->set('ger_feedpostbot_current_state', json_encode($current_state));               
+            }
+            else
+            {
+                // Confirm
+                confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+                    'id'        => $request->variable('id', 0),
+                    'action'    => 'delete',
+                )));
+            }
 		}
 
 		// List current
