@@ -99,6 +99,7 @@ class driver
 	 */
 	public function fetch_all()
 	{
+        $active_user = $this->user->data['user_id'];
 		if (empty($this->current_state))
 		{
 			return;
@@ -113,6 +114,7 @@ class driver
 			}
 		}
 		$this->config_text->set('ger_feedpostbot_current_state', json_encode($this->current_state));
+        $this->switch_user($active_user);
 	}
 
 	/**
