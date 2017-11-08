@@ -132,7 +132,7 @@ class driver
 		$data = @file_get_contents($url, false, $context); // Suppress errors
 		if (!$data)
 		{
-			$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_TIMEOUT', time(), array($url . ' (' . $timeout . ' s)'));
+			$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'FPB_LOG_FEED_TIMEOUT', time(), array($url . ' (' . $timeout . ' s)'));
 			return false;
 		}
 		else
@@ -209,7 +209,7 @@ class driver
             $return[] = $append;
 		}
 
-		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_FETCHED', time(), array($url));
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'FPB_LOG_FEED_FETCHED', time(), array($url));
 		return $return;
 	}
 
@@ -253,7 +253,7 @@ class driver
             // Add it to the list
             $return[] = $append;            
 		}
-		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_FETCHED', time(), array($url));
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'FPB_LOG_FEED_FETCHED', time(), array($url));
 		return $return;
 	}
 
@@ -294,7 +294,7 @@ class driver
             // Add it to the list
             $return[] = $append;
 		}
-		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_FETCHED', time(), array($url));
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'FPB_LOG_FEED_FETCHED', time(), array($url));
 		return $return;
 		
 	}
@@ -510,9 +510,10 @@ class driver
 		$row = $this->db->sql_fetchrow($result);
 		$row['is_registered'] = true;
 		$this->db->sql_freeresult($result);
-		$this->user->data = array_merge($this->user->data, $row);
+		$this->user->data = $row;
+        $this->user->setup();
 		$this->auth->acl($this->user->data);
-
+        $this->user->add_lang_ext('ger/feedpostbot', 'info_acp_feedpostbot');
 		return true;
 	}
 
@@ -645,7 +646,7 @@ class driver
         {
             $xml_errors .= $error->message . '\n';
         }
-        $this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_FEED_ERROR', time(), array($url, $xml_errors));
+        $this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'FPB_LOG_FEED_ERROR', time(), array($url, $xml_errors));
         
         // Clear libxml error buffer
         libxml_clear_errors();
