@@ -16,6 +16,7 @@ class driver
 	protected $config;
 	protected $config_text;
 	protected $user;
+	protected $language;
 	protected $auth;
 	protected $db;
 	protected $log;
@@ -31,17 +32,19 @@ class driver
 	 * @param \phpbb\config\db_text						$config_text			Config text object
 	 * @param \phpbb\request\request_interface			$request				Request object
 	 * @param \phpbb\user								$user					User object
+	 * @param \phpbb\language\language					$language				Language object
 	 * @param \phpbb\auth\auth							$auth					Auth object
 	 * @param \phpbb\db\driver\driver_interface			$db						DB object
 	 * @param string									$phpbb_root_path
 	 * @param string									$php_ext
 	 * @param \phpbb\event\dispatcher					$phpbb_dispatcher
 	 */
-	public function __construct(\phpbb\config\config $config,  \phpbb\config\db_text $config_text, \phpbb\user $user, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\log\log $log, $phpbb_root_path, $php_ext, \phpbb\event\dispatcher $phpbb_dispatcher)
+	public function __construct(\phpbb\config\config $config,  \phpbb\config\db_text $config_text, \phpbb\user $user, \phpbb\language\language $language, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db, \phpbb\log\log $log, $phpbb_root_path, $php_ext, \phpbb\event\dispatcher $phpbb_dispatcher)
 	{
 		$this->config = $config;
 		$this->config_text = $config_text;
 		$this->user = $user;
+		$this->language = $language;
 		$this->auth = $auth;
 		$this->db = $db;
 		$this->log = $log;
@@ -321,8 +324,8 @@ class driver
 			'pubDate' => $this->prop_to_string($items[0]['pubDate']),
 			'guid' => empty($items[0]['guid']) ? '' : $items[0]['guid'],
 		);
-		$this->switch_user($this->current_state[$source_id]['user_id']);
-		$to_post = array();
+
+        $to_post = array();
 		foreach($items as $item)
 		{
 			if ($this->is_handled($item, $this->current_state[$source_id]['latest']))
@@ -338,6 +341,8 @@ class driver
 		}
 		if (!empty($to_post))
 		{
+            $this->switch_user($this->current_state[$source_id]['user_id']);
+            
 			// Reverse array to make sure that the latest item is also the newest
 			$to_post = array_reverse($to_post);
 			foreach($to_post as $item)
@@ -505,17 +510,27 @@ class driver
 	 */
 	private function switch_user($new_user_id)
 	{
-		$sql = 'SELECT *
+        if ($this->user->data['user_id'] == $new_user_id)
+        {
+            return true;
+        }
+        $cur_lang = $this->user->data['user_lang'];
+		
+        $sql = 'SELECT *
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . (int) $new_user_id;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
-		$row['is_registered'] = true;
 		$this->db->sql_freeresult($result);
-		$this->user->data = $row;
-        $this->user->setup();
+        $row['is_registered'] = true;
+        $this->user->data = array_merge($this->user->data, $row);
+        
+        if ($cur_lang != $row['user_lang'])
+        {
+            $this->language->set_user_language($row['user_lang'], true);
+        }
 		$this->auth->acl($this->user->data);
-        $this->user->add_lang_ext('ger/feedpostbot', 'info_acp_feedpostbot');
+        $this->language->add_lang('info_acp_feedpostbot', 'ger/feedpostbot');
 		return true;
 	}
 

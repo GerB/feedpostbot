@@ -5,6 +5,7 @@ services:
             - '@config'
             - '@config_text'
             - '@user'
+            - '@language'
             - '@auth'
             - '@dbal.conn'
             - '@log'
