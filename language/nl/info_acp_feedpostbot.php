@@ -24,6 +24,11 @@ $lang = array_merge($lang, array(
 	'FPB_ACP_SETTINGS_EXPLAIN'			=> 'Je kunt RSS, ATOM en RDF feeds toevoegen met onderstaand formulier. Begin met het toevoegen van een feed URL. Als je feeds toegevoegd hebt, wordt een tabel met deze parameters getoond:',
 	'FPB_ACP_FEEDPOSTBOT_SETTING_SAVED'	=> 'Feed post bot instellingen opgeslagen',
 	'FPB_ACP_FEEDPOSTBOT_TITLE'			=> 'Feed post bot',
+	'FPB_ACP_FETCHED_ITEMS'             => array(
+		1	=> 'Alle feeds verwerkt; %d nieuw bericht geplaatst.',
+		2	=> 'Alle feeds verwerktd; %d nieuwe berichten geplaatst.',
+	),
+    'FPB_ACP_NO_FETCHED_ITEMS'          => 'Geen (nieuwe) items om te verwerken',
 	'FPB_ADD_FEED'						=> 'Feed toevoegen',
 	'FPB_APPEND_LINK'					=> 'Link toevoegen',
 	'FPB_APPEND_LINK_EXPLAIN'			=> 'Voeg een link naar de bron van het feedbericht toe.',    

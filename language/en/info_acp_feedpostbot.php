@@ -23,6 +23,11 @@ $lang = array_merge($lang, array(
 	'FPB_ACP_SETTINGS_EXPLAIN'			=> 'You can add RSS, ATOM or RDF feeds using the form below. Start with posting a feed URL. When you have entered feeds, you find a table with these parameters:',
 	'FPB_ACP_FEEDPOSTBOT_SETTING_SAVED'	=> 'Feed post bot settings saved',
 	'FPB_ACP_FEEDPOSTBOT_TITLE'			=> 'Feed post bot',
+    'FPB_ACP_FETCHED_ITEMS'             => array(
+		1	=> 'All feeds fetched; %d new post created',
+		2	=> 'All feeds fetched: %d new posts created',
+	),
+    'FPB_ACP_NO_FETCHED_ITEMS'          => 'No (new) items to fetch',
 	'FPB_ADD_FEED'						=> 'Add feed',
 	'FPB_APPEND_LINK'					=> 'Append link',
 	'FPB_APPEND_LINK_EXPLAIN'			=> 'Append a link to the source of the feed item',

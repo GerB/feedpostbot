@@ -102,6 +102,7 @@ class driver
 	 */
 	public function fetch_all()
 	{
+        $counter = 0;
         $active_user = $this->user->data['user_id'];
 		if (empty($this->current_state))
 		{
@@ -113,11 +114,12 @@ class driver
 			// Only proceed if not disabled in ACP
 			if ($source['forum_id'] > 0)
 			{
-				$this->fetch_items($this->parse_feed($source['url'], $source['type'], $source['timeout']), $id);
+				$counter += $this->fetch_items($this->parse_feed($source['url'], $source['type'], $source['timeout']), $id);
 			}
 		}
 		$this->config_text->set('ger_feedpostbot_current_state', json_encode($this->current_state));
         $this->switch_user($active_user);
+        return $counter;
 	}
 
 	/**
@@ -152,7 +154,7 @@ class driver
 	 */
 	public function detect_feed_type($url)
 	{
-		$data = file_get_contents($url);
+		$data = @file_get_contents($url);
 		if (!$data)
 		{
 			return false;

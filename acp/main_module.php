@@ -31,8 +31,16 @@ class main_module
 		$current_state = $feedpostbot->current_state;
 		if ($request->is_set_post('run_all'))
 		{
-			$feedpostbot->fetch_all();
-			trigger_error($user->lang('FPB_ACP_FEEDPOSTBOT_SETTING_SAVED').adm_back_link($this->u_action));
+			$fetched = $feedpostbot->fetch_all();
+            if ($fetched > 0)
+            {
+                $message = $user->lang('FPB_ACP_FETCHED_ITEMS', $fetched);
+            }
+            else 
+            {
+                $message = $user->lang('FPB_ACP_NO_FETCHED_ITEMS');
+            }
+			trigger_error($message.adm_back_link($this->u_action));
 		}
         // Set main config. Might be expanded in the future
 		else if ($request->is_set_post('set_config'))
