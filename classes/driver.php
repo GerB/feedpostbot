@@ -102,13 +102,18 @@ class driver
 	 */
 	public function fetch_all()
 	{
+        $lock = (int) $this->config['feedpostbot_locked'];
+        if ($lock > 0)
+        {
+            return;
+        }
         $counter = 0;
         $active_user = $this->user->data['user_id'];
 		if (empty($this->current_state))
 		{
 			return;
 		}
-
+        $this->config->set('feedpostbot_locked', time());
 		foreach($this->current_state as $id => $source)
 		{
 			// Only proceed if not disabled in ACP
@@ -119,6 +124,7 @@ class driver
 		}
 		$this->config_text->set('ger_feedpostbot_current_state', json_encode($this->current_state));
         $this->switch_user($active_user);
+        $this->config->set('feedpostbot_locked', 0);
         return $counter;
 	}
 
@@ -190,6 +196,7 @@ class driver
             $this->log_xml_error($url);
 			return false;
 		}
+        $ns = $content->getNamespaces(true);
 
 		foreach($content->entry as $item)
 		{
@@ -197,7 +204,7 @@ class driver
 				'guid' => $this->prop_to_string($item->id),
 				'title' => $this->prop_to_string($item->title),
 				'link' => $this->prop_to_string($item->link->attributes()->href),
-				'description' =>  empty($item->content) ? ( empty($item->summary) ? $this->prop_to_string($item->title) : $this->prop_to_string($item->summary) ) : $this->prop_to_string($item->content),
+				'description' =>  $this->get_item_description($item, $ns),
 				'pubDate' => empty($item->updated) ? 0 : $this->prop_to_string($item->updated),
 			);
                     
@@ -236,16 +243,17 @@ class driver
             $this->log_xml_error($url);
 			return false;
 		}
-
+        $ns = $content->getNamespaces(true);
+        
 		foreach($content->item as $item)
-		{
+		{            
 			$append = array(
 				'title' => $this->prop_to_string($item->title),
 				'link' => $this->prop_to_string($item->link),
-				'description' =>  empty($item->description) ? $this->prop_to_string($item->title) : $this->prop_to_string($item->description),
+				'description' =>  $this->get_item_description($item, $ns),
 				'pubDate' => empty($item->date) ? ( empty($content->channel->date) ? 0 : $this->prop_to_string($content->channel->date) ) : $this->prop_to_string($item->date), // Fallback galore
 			);
-        
+
             /**
             * Modify the fetched RDF item before it's added to the return list
             *
@@ -277,13 +285,15 @@ class driver
             $this->log_xml_error($url);
 			return false;
 		}
+        $ns = $content->getNamespaces(true);
+
 		foreach($content->channel->item as $item)
 		{
             $append = array(
 				'guid' => $this->prop_to_string($item->guid),
 				'title' => $this->prop_to_string($item->title),
 				'link' => $this->prop_to_string($item->link),
-				'description' =>  empty($item->description) ? $this->prop_to_string($item->title) : $this->prop_to_string($item->description),
+				'description' =>  $this->get_item_description($item, $ns),
 				'pubDate' => $this->prop_to_string($item->pubDate),
 			);
         
@@ -306,7 +316,36 @@ class driver
 		
 	}
 
-	/**
+    /**
+     * Get some description with fallbacks for fallbacks
+     * @param object $item
+     * @param object $ns
+     * @return string
+     */
+    private function get_item_description($item, $ns = null)
+    {
+        if ( (!empty($ns['content'])) && $item->children($ns['content'])->encoded) 
+        {
+            return $this->prop_to_string($item->children($ns['content'])->encoded);
+        }
+        if (!empty($item->description))
+        {
+            return $this->prop_to_string($item->description);
+        }
+        if (!empty($item->summary))
+        {
+            return $this->prop_to_string($item->summary);
+        }
+        if (!empty($item->title))
+        {
+            return $this->prop_to_string($item->title);
+        }
+        // Still here?
+        return '';
+    }
+
+
+    /**
 	 * Fetch the new content in feed
 	 * 
 	 * @param array $items
