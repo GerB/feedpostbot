@@ -52,6 +52,15 @@ class main_module
             $config->set('feedpostbot_cron_frequency', $request->variable('cron_frequency', 0));
             trigger_error($user->lang('FPB_ACP_FEEDPOSTBOT_SETTING_SAVED').adm_back_link($this->u_action));
         }
+		else if ($request->is_set_post('reset_lock'))
+        {
+			if (!check_form_key('ger/feedpostbot'))
+			{
+				trigger_error('FORM_INVALID');
+			}
+            $config->set('feedpostbot_locked', 0);
+            trigger_error($user->lang('FPB_ACP_FEEDPOSTBOT_SETTING_SAVED').adm_back_link($this->u_action));
+        }
 		else if ($request->is_set_post('submit'))
 		{
 			if (!check_form_key('ger/feedpostbot'))
@@ -157,8 +166,9 @@ class main_module
 		}
 
 		$template->assign_vars(array(
-			'CRON_FREQUENCY' => $config['feedpostbot_cron_frequency'],
-			'U_ADD_ACTION' => $this->u_action . "&amp;action=add",
+			'FPB_LOCKED'        => $config['feedpostbot_locked'],
+			'CRON_FREQUENCY'    => $config['feedpostbot_cron_frequency'],
+			'U_ADD_ACTION'      => $this->u_action . "&amp;action=add",
 		));
 	}
 

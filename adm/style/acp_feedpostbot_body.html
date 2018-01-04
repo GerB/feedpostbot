@@ -3,7 +3,41 @@
 <a id="maincontent"></a>
 
 <h1>{L_SETTINGS}</h1>
-
+<!-- IF S_ERROR -->
+    <div class="errorbox">
+            <h3>{L_WARNING}</h3>
+            <p>{ERROR_MSG}</p>
+    </div>
+<!-- ENDIF -->
+<form id="config" method="post" action="{U_ACTION}">
+    <fieldset>
+        {L_FPB_CRON_FREQUENCY}{L_COLON} <input type="number" name="cron_frequency" value="{CRON_FREQUENCY}" /> <input class="button1" type="submit" name="set_config" value="{L_SUBMIT}" />
+        {S_FORM_TOKEN}
+    </fieldset>
+</form>
+<!-- IF FPB_LOCKED -->
+<form id="reset_lock" method="post" action="{U_ACTION}">
+    <fieldset>
+        {L_FPB_LOCKED_EXPLAIN}{L_COLON} <input class="button1" type="submit" name="reset_lock" value="{L_SUBMIT}" />
+        {S_FORM_TOKEN}
+    </fieldset>
+</form>
+<!-- ELSE -->
+<form id="run_all" method="post" action="{U_ACTION}">
+    <fieldset>
+        {L_FPB_FETCH_ALL_FEEDS}{L_COLON} <input class="button1" type="submit" name="run_all" value="{L_SUBMIT}" />
+        {S_FORM_TOKEN}
+    </fieldset>
+</form>
+<!-- ENDIF -->
+<h2>{L_FPB_FEEDS}</h2>
+<form id="add_source" method="post" action="{U_ADD_ACTION}">
+	<fieldset>
+		{L_FPB_ADD_FEED}{L_COLON} <input type="text" name="add_feed" value="" /> <input class="button1" type="submit" name="submit" value="{L_SUBMIT}" />
+		<input type="hidden" name="add" value="1" />
+		{S_FORM_TOKEN}
+	</fieldset>
+</form>
 <p>{L_FPB_ACP_SETTINGS_EXPLAIN}</p>
 <dl>
 	<dt><label>{L_FPB_FEED_URL}{L_COLON}</label></dt><dd>{L_FPB_FEED_URL_EXPLAIN}</dd>
@@ -16,33 +50,7 @@
 	<dt><label>{L_FPB_CURDATE}{L_COLON}</label></dt><dd>{L_FPB_CURDATE_EXPLAIN}</dd>
 	<dt><label>{L_FPB_APPEND_LINK}{L_COLON}</label></dt><dd>{L_FPB_APPEND_LINK_EXPLAIN}</dd>
 </dl>
-<form id="config" method="post" action="{U_ACTION}">
-    <fieldset>
-        {L_FPB_CRON_FREQUENCY}{L_COLON} <input type="number" name="cron_frequency" value="{CRON_FREQUENCY}" /> <input class="button1" type="submit" name="set_config" value="{L_SUBMIT}" />
-        {S_FORM_TOKEN}
-    </fieldset>
-</form>
-<form id="run_all" method="post" action="{U_ACTION}">
-    <fieldset>
-        {L_FPB_FETCH_ALL_FEEDS}{L_COLON} <input class="button1" type="submit" name="run_all" value="{L_SUBMIT}" />
-        {S_FORM_TOKEN}
-    </fieldset>
-    
-</form>
-<!-- IF S_ERROR -->
-	<div class="errorbox">
-		<h3>{L_WARNING}</h3>
-		<p>{ERROR_MSG}</p>
-	</div>
-<!-- ENDIF -->
-<h2>{L_FPB_FEEDS}</h2>
-<form id="add_source" method="post" action="{U_ADD_ACTION}">
-	<fieldset>
-		{L_FPB_ADD_FEED}{L_COLON} <input type="text" name="add_feed" value="" /> <input class="button1" type="submit" name="submit" value="{L_SUBMIT}" />
-		<input type="hidden" name="add" value="1" />
-		{S_FORM_TOKEN}
-	</fieldset>
-</form>
+<br>
 <form id="manage_feeds" method="post" action="{U_MANAGE_ACTION}">
 					                                        
 	<table class="table1">

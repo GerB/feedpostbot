@@ -124,7 +124,7 @@ class driver
 		}
 		$this->config_text->set('ger_feedpostbot_current_state', json_encode($this->current_state));
         $this->switch_user($active_user);
-        $this->config->set('feedpostbot_locked', 0);
+        $this->config->set('feedpostbot_locked', 0, 1);
         return $counter;
 	}
 
