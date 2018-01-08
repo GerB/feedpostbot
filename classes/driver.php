@@ -325,12 +325,16 @@ class driver
     private function get_item_description($item, $ns = null)
     {
         if ( (!empty($ns['content'])) && $item->children($ns['content'])->encoded) 
-        {
+        {   
             return $this->prop_to_string($item->children($ns['content'])->encoded);
         }
         if (!empty($item->description))
         {
             return $this->prop_to_string($item->description);
+        }
+        if (!empty($item->content))
+        {
+            return $this->prop_to_string($item->content);
         }
         if (!empty($item->summary))
         {

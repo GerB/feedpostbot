@@ -26,7 +26,7 @@ $lang = array_merge($lang, array(
 	'FPB_ACP_FEEDPOSTBOT_TITLE'			=> 'Feed post bot',
 	'FPB_ACP_FETCHED_ITEMS'             => array(
 		1	=> 'Alle feeds verwerkt; %d nieuw bericht geplaatst.',
-		2	=> 'Alle feeds verwerktd; %d nieuwe berichten geplaatst.',
+		2	=> 'Alle feeds verwerkt; %d nieuwe berichten geplaatst.',
 	),
     'FPB_ACP_NO_FETCHED_ITEMS'          => 'Geen (nieuwe) items om te verwerken',
 	'FPB_ADD_FEED'						=> 'Feed toevoegen',
