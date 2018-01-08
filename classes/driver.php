@@ -492,7 +492,8 @@ class driver
 			'message_md5'		 => md5($post_text), // The md5 hash of your message
 			// Values from generate_text_for_storage()
 			'bbcode_bitfield'	 => $bitfield, // Value created from the generate_text_for_storage() function.
-			'bbcode_uid'		 => $uid, // Value created from the generate_text_for_storage() function.    // Other Options
+			'bbcode_uid'		 => $uid, // Value created from the generate_text_for_storage() function.    
+            // Other Options
 			'post_edit_locked'	 => 0, // Disallow post editing? 1 = Yes, 0 = No
 			'topic_title'		 => $title,
 			'notify_set'		 => true, // (bool)
@@ -500,7 +501,6 @@ class driver
 			'post_time'			 => empty($this->current_state[$source_id]['curdate']) ? strtotime($rss_item['pubDate']) : 0, // Set a specific time, use 0 to let submit_post() take care of getting the proper time (int)
 			'forum_name'		 => $this->get_forum_name($this->current_state[$source_id]['forum_id']), // For identifying the name of the forum in a notification email. (string)    // Indexing
 			'enable_indexing'	 => true, // Allow indexing the post? (bool)    // 3.0.6
-			'force_visibility'	 => true, // 3.1.x: Allow the post to be submitted without going into unapproved queue, or make it be deleted (replaces force_approved_state)
 		);
         
         /**
