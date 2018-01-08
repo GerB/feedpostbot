@@ -57,6 +57,9 @@ $lang = array_merge($lang, array(
 	'FPB_TEXTLIMIT_EXPLAIN'				=> 'De ruwe tekst van de feed zal gelimiteerd worden tot het opgegeven aantal tekens. Woorden worden niet afgekapt en eventuele HTML-fouten die hierdoor ontstaan worden gerepareerd alvorens de BBcode conversie plaatsvind. Er wordt een “Lees meer” link toegevoegd. <br> Stel op 0 in om deze functie uit te schakelen.',
 	'FPB_TIMEOUT'						=> 'Time-out',
 	'FPB_TIMEOUT_EXPLAIN'				=> 'De tijd die gewacht wordt op antwoord van de feed URL. Indien deze tijd verstreken is zonder antwoord wordt het verzoek afgebroken.',
+	'FPB_TYPE_ATOM'						=> 'ATOM',
+	'FPB_TYPE_RDF'						=> 'RDF',
+	'FPB_TYPE_RSS'						=> 'RSS',
 	'FPB_USER_ID'						=> 'Feed gebruiker id',
 	'FPB_USER_ID_EXPLAIN'				=> 'De id van de gebruiker op wiens naam de nieuwe berichten geplaatst worden.',
 ));

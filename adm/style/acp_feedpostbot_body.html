@@ -78,9 +78,9 @@
 			<td><input type="text" name="{feeds.ID}_url" value="{feeds.URL}" style="width: 98%" /></td>
 			<td style="text-align: center;">
                             <select name="{feeds.ID}_type">
-                                <option value="rss"<!-- IF feeds.TYPE eq "rss" --> selected="selected"<!-- ENDIF -->>RSS</option>
-				<option value="atom"<!-- IF feeds.TYPE eq "atom" --> selected="selected"<!-- ENDIF -->>ATOM</option>
-				<option value="rdf"<!-- IF feeds.TYPE eq "rdf" --> selected="selected"<!-- ENDIF -->>RDF</option>
+                                <option value="rss"<!-- IF feeds.TYPE eq "rss" --> selected="selected"<!-- ENDIF -->>{L_FPB_TYPE_RSS}</option>
+				<option value="atom"<!-- IF feeds.TYPE eq "atom" --> selected="selected"<!-- ENDIF -->>{L_FPB_TYPE_ATOM}</option>
+				<option value="rdf"<!-- IF feeds.TYPE eq "rdf" --> selected="selected"<!-- ENDIF -->>{L_FPB_TYPE_RDF}</option>
                             </select>
                         </td>
 			<td><input type="text" name="{feeds.ID}_prefix" value="{feeds.PREFIX}" style="width: 98%" /></td>

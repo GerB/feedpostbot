@@ -56,6 +56,9 @@ $lang = array_merge($lang, array(
 	'FPB_TEXTLIMIT_EXPLAIN'				=> 'The feed text is limited to given number of characters. Note that this value is applied to the raw feed text and words will be kept intact. Afterwards any broken HTML from the feed will be mended and converted to BBcode and a link with “Read more” is appended. The limit is therefore only an incidation for the resulting post text. <br> Set to 0 to disable text limiting.',
 	'FPB_TIMEOUT'						=> 'Timeout',
 	'FPB_TIMEOUT_EXPLAIN'				=> 'Timeout for requesting the Feed URL. If this time has passed without retrieving the feed content, the request is cancelled.',
-	'FPB_USER_ID'						=> 'Feed user id',
+    'FPB_TYPE_ATOM'						=> 'ATOM',
+	'FPB_TYPE_RDF'						=> 'RDF',
+	'FPB_TYPE_RSS'						=> 'RSS',
+    'FPB_USER_ID'						=> 'Feed user id',
 	'FPB_USER_ID_EXPLAIN'				=> 'The id of the user that will be used to post new items.',
 ));
