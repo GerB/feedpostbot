@@ -75,6 +75,10 @@ class feedpostbot_cron extends \phpbb\cron\task\base
 	 */
 	public function should_run()
 	{
-		return $this->config['feedpostbot_cron_last_run'] < (time() - $this->cron_frequency);
+        if ($this->cron_frequency > 0) 
+        {
+            return $this->config['feedpostbot_cron_last_run'] < (time() - $this->cron_frequency);
+        }
+        return false;
 	}
 }
