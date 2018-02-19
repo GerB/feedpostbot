@@ -104,7 +104,7 @@ class main_module
                 $new_state = [];
 				foreach ($current_state as $id => $source)
 				{
-					$url = $request->variable($id.'_url', '');
+					$url = $request->variable($id.'_url', '', true);
 					if (!$this->validate_feed($current_state, $url, $id))
 					{
 						trigger_error('FPB_FEED_URL_INVALID');
@@ -112,7 +112,7 @@ class main_module
 					$new_state[$id] = array(
 						'url' => $url,
 						'type' => $request->variable($id.'_type', $current_state[$id]['type']),
-						'prefix' => $request->variable($id.'_prefix', ''),
+						'prefix' => $request->variable($id.'_prefix', '', true),
 						'forum_id' => $request->variable($id.'_forum_id', 0),
 						'user_id' => $request->variable($id.'_user_id', $user->data['user_id']),
 						'textlimit' => $request->variable($id.'_textlimit', 0),
