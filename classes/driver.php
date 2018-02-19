@@ -718,6 +718,7 @@ class driver
 			"/\<br(.*?)\>/is" => "\n",
 			"/\<strong(.*?)\>(.*?)\<\/strong\>/is" => "[b]$2[/b]",
 			"/\<a (.*?)href=\"(.*?)\"(.*?)\>(.*?)\<\/a\>/is" => "[url=$2]$4[/url]",
+			"/\<iframe (.*?)src=\"(.*?)\"(.*?)<\/iframe\>/is" => "\n$2\n",
 		);
 
 		// Replace main stuff and strip anything else
