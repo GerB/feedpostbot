@@ -128,6 +128,40 @@ class driver
         return $counter;
 	}
 
+    
+    /**
+     * Get content through curl or fallback to file_get_contents
+     * @param string $url
+     * @param int $timeout
+     * @return string with content data or false
+     */
+    private function get_content($url, $timeout = 10)
+    {
+        if (!function_exists('curl_init')) 
+        {
+            $opts['http']['timout'] = (int) $timeout;
+            $context = stream_context_create($opts);
+            $data = @file_get_contents($url, false, $context); // Suppress errors
+        }
+        else
+        {
+            $curl = curl_init($url);
+
+            curl_setopt($curl, CURLOPT_FAILONERROR, true);
+            curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
+
+            $data = curl_exec($curl);
+            curl_close($curl);  
+        }
+        if (empty($data)) 
+        {
+            return false;
+        }
+        return $data;
+    }
+    
 	/**
 	 * Parse a feed
 	 * @param string $url
@@ -140,9 +174,7 @@ class driver
         // Don't throw errors but log them instead
         libxml_use_internal_errors(true);
 
-		$opts['http']['timout'] = (int) $timeout;
-		$context = stream_context_create($opts);
-		$data = @file_get_contents($url, false, $context); // Suppress errors
+        $data = $this->get_content($url, $timeout);
 		if (!$data)
 		{
 			$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'FPB_LOG_FEED_TIMEOUT', time(), array($url . ' (' . $timeout . ' s)'));
@@ -155,18 +187,15 @@ class driver
 		}
 	}
 
-	/**
+    /**
 	 * Autodetect feed type
 	 */
-	public function detect_feed_type($url)
-	{
-		$data = @file_get_contents($url);
-		if (!$data)
-		{
-			return false;
-		}
-		else
-		{
+    public function detect_feed_type($url)
+    {
+        $data = $this->get_content($url);
+   
+        if (!empty($data))
+        {
 			// Determine feed type and proceed accordingly
 			if ((stripos($data, 'application/atom+xml')!== false) || preg_match('/xmlns="(.+?)Atom"/i', $data))
 			{
@@ -180,8 +209,8 @@ class driver
 			{
 				return 'rss';
 			}
-		}
-	}
+        }
+    }
 
 	/**
 	 * Parse the atom source into relevant info
