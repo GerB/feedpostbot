@@ -715,8 +715,9 @@ class driver
 	 * @return string
 	 */
 	private function html2bbcode($html_string)
-	{
+	{ 
 		$convert = array(
+            "/[\r\n]+/" => " ",
 			"/\<ul(.*?)\>(.*?)\<\/ul\>/is" => "[list]$2[/list]",
 			"/\<ol(.*?)\>(.*?)\<\/ol\>/is" => "[list]$2[/list]",
 			"/\<b(.*?)\>(.*?)\<\/b\>/is" => "[b]$2[/b]",
@@ -725,7 +726,7 @@ class driver
 			"/\<li(.*?)\>(.*?)\<\/li\>/is" => "[*]$2",
 			"/\<img(.*?) src=\"(.*?)\"(.*?)\>/is" => "[img]$2[/img]",
 			"/\<div(.*?)\>(.*?)\<\/div\>/is" => "$2",
-			"/\<br(.*?)\>/is" => "\n",
+			"/[\s]*\<br(.*?)\>[\s]*/is" => "\n",
 			"/\<strong(.*?)\>(.*?)\<\/strong\>/is" => "[b]$2[/b]",
             '/<a(.+?)href=["\']?([^"\'>]+)["\']?(.*?)>(.*?)\<\/a\>/is' => "[url=$2]$4[/url]",
 			"/\<iframe (.*?)src=\"(.*?)\"(.*?)<\/iframe\>/is" => "\n$2\n",
