@@ -133,9 +133,10 @@ class driver
      * Get content through curl or fallback to file_get_contents
      * @param string $url
      * @param int $timeout
+     * @param bool $useragent_override
      * @return string with content data or false
      */
-    private function get_content($url, $timeout = 10)
+    private function get_content($url, $timeout = 10, $useragent_override = false)
     {
         if (!function_exists('curl_init')) 
         {
@@ -151,12 +152,20 @@ class driver
             curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
-
+            if ($useragent_override)
+            {
+                curl_setopt($curl, CURLOPT_USERAGENT, 'Googlebot/2.1 (+http://www.google.com/bot.html)' );
+            }
             $data = curl_exec($curl);
             curl_close($curl);  
         }
         if (empty($data)) 
         {
+            // Try it posing as Google
+            if (!$useragent_override) 
+            {
+                return $this->get_content($url, $timeout, true);
+            }
             return false;
         }
         return $data;
@@ -175,7 +184,7 @@ class driver
         libxml_use_internal_errors(true);
 
         $data = $this->get_content($url, $timeout);
-		if (!$data)
+        if (!$data)
 		{
 			$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'FPB_LOG_FEED_TIMEOUT', time(), array($url . ' (' . $timeout . ' s)'));
 			return false;
@@ -193,7 +202,7 @@ class driver
     public function detect_feed_type($url)
     {
         $data = $this->get_content($url);
-   
+
         if (!empty($data))
         {
 			// Determine feed type and proceed accordingly
@@ -210,6 +219,7 @@ class driver
 				return 'rss';
 			}
         }
+        return false;
     }
 
 	/**
@@ -717,14 +727,13 @@ class driver
 			"/\<div(.*?)\>(.*?)\<\/div\>/is" => "$2",
 			"/\<br(.*?)\>/is" => "\n",
 			"/\<strong(.*?)\>(.*?)\<\/strong\>/is" => "[b]$2[/b]",
-			"/\<a (.*?)href=\"(.*?)\"(.*?)\>(.*?)\<\/a\>/is" => "[url=$2]$4[/url]",
+            '/<a(.+?)href=["\']?([^"\'>]+)["\']?(.*?)>(.*?)\<\/a\>/is' => "[url=$2]$4[/url]",
 			"/\<iframe (.*?)src=\"(.*?)\"(.*?)<\/iframe\>/is" => "\n$2\n",
 		);
 
 		// Replace main stuff and strip anything else
 		return strip_tags(preg_replace(array_keys($convert), array_values($convert), $html_string));
 	}
-    
     /**
      * Log xml error messages and clear
      * @param string $url
