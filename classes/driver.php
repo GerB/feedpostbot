@@ -105,13 +105,13 @@ class driver
         $lock = (int) $this->config['feedpostbot_locked'];
         if ($lock > 0)
         {
-            return;
+            return 0;
         }
         $counter = 0;
         $active_user = $this->user->data['user_id'];
 		if (empty($this->current_state))
 		{
-			return;
+			return 0;
 		}
         $this->config->set('feedpostbot_locked', time());
 		foreach($this->current_state as $id => $source)

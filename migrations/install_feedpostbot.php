@@ -26,7 +26,6 @@ class install_feedpostbot extends \phpbb\db\migration\migration
 	{
 		return array(
 			array('config.add', array('feedpostbot_cron_last_run', 0)),
-			array('config.add', array('feedpostbot_locked', 0)),
 			array('config_text.add', array('ger_feedpostbot_current_state', '')),
 			array('module.add', array(
 				'acp',
