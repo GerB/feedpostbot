@@ -99,6 +99,7 @@ class driver
 	/**
 	 * Fetch all feeds
 	 * This is called by the cron handler
+     * @return int
 	 */
 	public function fetch_all()
 	{
@@ -113,7 +114,10 @@ class driver
 		{
 			return 0;
 		}
-        $this->config->set('feedpostbot_locked', time());
+        if (!$this->config->set_atomic('feedpostbot_locked', 0, time(), false))
+        {
+            return 0;
+        }
 		foreach($this->current_state as $id => $source)
 		{
 			// Only proceed if not disabled in ACP
@@ -124,7 +128,7 @@ class driver
 		}
 		$this->config_text->set('ger_feedpostbot_current_state', json_encode($this->current_state));
         $this->switch_user($active_user);
-        $this->config->set('feedpostbot_locked', 0, 1);
+        $this->config->set('feedpostbot_locked', 0, false);
         return $counter;
 	}
 
