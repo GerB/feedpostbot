@@ -142,6 +142,7 @@ class driver
      */
     private function get_content($url, $timeout = 10, $useragent_override = false)
     {
+        $url= html_entity_decode($url);
         if (!function_exists('curl_init')) 
         {
             $opts['http']['timout'] = (int) $timeout;
