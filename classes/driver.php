@@ -138,12 +138,13 @@ class driver
      * @param string $url
      * @param int $timeout
      * @param bool $useragent_override
+     * @param bool $force_file_get_contents
      * @return string with content data or false
      */
-    private function get_content($url, $timeout = 10, $useragent_override = false)
+    private function get_content($url, $timeout = 10, $useragent_override = false, $force_file_get_contents = false)
     {
         $url= html_entity_decode($url);
-        if (!function_exists('curl_init')) 
+        if (!function_exists('curl_init') || $force_file_get_contents) 
         {
             $opts['http']['timout'] = (int) $timeout;
             $context = stream_context_create($opts);
@@ -171,7 +172,7 @@ class driver
             {
                 return $this->get_content($url, $timeout, true);
             }
-            return false;
+            return $this->get_content($url, $timeout, false, true);
         }
         return $data;
     }
