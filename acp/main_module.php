@@ -28,6 +28,7 @@ class main_module
 		add_form_key('ger/feedpostbot');
 
 		// Fetch current feeds
+        $feedpostbot->init_current_state();
 		$current_state = $feedpostbot->current_state;
 		if ($request->is_set_post('run_all'))
 		{

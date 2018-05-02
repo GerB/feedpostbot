@@ -51,8 +51,6 @@ class driver
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
-
-		$this->init_current_state();
 	}
 
 	/**
@@ -103,6 +101,10 @@ class driver
 	 */
 	public function fetch_all()
 	{
+        if (empty($this->current_state)) 
+        {
+            $this->init_current_state();
+        }
         $lock = (int) $this->config['feedpostbot_locked'];
         if ($lock > 0)
         {
@@ -602,6 +604,7 @@ class driver
 	{
         if ($this->user->data['user_id'] == $new_user_id)
         {
+            $this->language->add_lang('info_acp_feedpostbot', 'ger/feedpostbot');
             return true;
         }
         $cur_lang = $this->user->data['user_lang'];

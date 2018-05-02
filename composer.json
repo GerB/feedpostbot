@@ -4,7 +4,7 @@
     "description": "Simple feed reader that posts new items in your forum. Supports RSS, RDF and ATOM feeds",
     "homepage": "",
     "version": "1.0.11",
-    "time": "2018-03-13",
+    "time": "2018-05-02",
     "license": "GPL-2.0",
     "authors": [
         {
