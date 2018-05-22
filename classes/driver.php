@@ -166,16 +166,17 @@ class driver
             }
             $data = curl_exec($curl);
             curl_close($curl);  
-        }
-        if (empty($data)) 
-        {
-            // Try it posing as Google
-            if (!$useragent_override) 
+            if (empty($data)) 
             {
-                return $this->get_content($url, $timeout, true);
+                // Try it posing as Google
+                if (!$useragent_override) 
+                {
+                    return $this->get_content($url, $timeout, true);
+                }
+                return $this->get_content($url, $timeout, false, true);
             }
-            return $this->get_content($url, $timeout, false, true);
         }
+
         return $data;
     }
     
@@ -735,12 +736,24 @@ class driver
 			"/\<li(.*?)\>(.*?)\<\/li\>/is" => "[*]$2",
 			'/\<img(.*?) src=["\']?([^"\'>]+)["\']?(.*?)\>/is' => "[img]$2[/img]",
 			"/\<div(.*?)\>(.*?)\<\/div\>/is" => "$2",
+			"/\<p(.*?)\>(.*?)\<\/p\>/is" => "$2\n",
 			"/[\s]*\<br(.*?)\>[\s]*/is" => "\n",
 			"/\<strong(.*?)\>(.*?)\<\/strong\>/is" => "[b]$2[/b]",
             '/<a(.+?)href=["\']?([^"\'>]+)["\']?(.*?)>(.*?)\<\/a\>/is' => "[url=$2]$4[/url]",
 			'/\<iframe (.*?)src=["\']?([^"\'>]+)["\']?(.*?)<\/iframe\>/is' => "\n$2\n",
 		);
 
+        /**
+        * Modify the fetched RSS item before it's added to the return list
+        *
+        * @event ger.feedpostbot.html2bbcode_convert
+        * @var  array   $convert  regex array
+        * @var  string  $html_string input string
+        * @since 1.0.12
+        */
+        $vars = array('item', 'append');
+        extract($this->phpbb_dispatcher->trigger_event('ger.feedpostbot.html2bbcode_convert', compact($vars)));   
+        
 		// Replace main stuff and strip anything else
 		return strip_tags(preg_replace(array_keys($convert), array_values($convert), $html_string));
 	}
