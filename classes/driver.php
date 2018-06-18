@@ -734,9 +734,9 @@ class driver
 			"/\<i(.*?)\>(.*?)\<\/i\>/is" => "[i]$2[/i]",
 			"/\<u(.*?)\>(.*?)\<\/u\>/is" => "[u]$2[/u]",
 			"/\<li(.*?)\>(.*?)\<\/li\>/is" => "[*]$2",
-			'/\<img(.*?) src=["\']?([^"\'>]+)["\']?(.*?)\>/is' => "[img]$2[/img]",
+			'/\<img(.*?) src=["\']?([^"\'>]+)["\']?(.*?)\>/is' => "\n[img]$2[/img]\n",
 			"/\<div(.*?)\>(.*?)\<\/div\>/is" => "$2",
-			"/\<p(.*?)\>(.*?)\<\/p\>/is" => "$2\n",
+			"/\<p(.*?)\>(.*?)\<\/p\>/is" => "\n$2\n",
 			"/[\s]*\<br(.*?)\>[\s]*/is" => "\n",
 			"/\<strong(.*?)\>(.*?)\<\/strong\>/is" => "[b]$2[/b]",
             '/<a(.+?)href=["\']?([^"\'>]+)["\']?(.*?)>(.*?)\<\/a\>/is' => "[url=$2]$4[/url]",
@@ -757,6 +757,7 @@ class driver
 		// Replace main stuff and strip anything else
 		return strip_tags(preg_replace(array_keys($convert), array_values($convert), $html_string));
 	}
+    
     /**
      * Log xml error messages and clear
      * @param string $url

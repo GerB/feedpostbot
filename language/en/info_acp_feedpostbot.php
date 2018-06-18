@@ -50,7 +50,6 @@ $lang = array_merge($lang, array(
 	'FPB_NO_FEEDS'						=> 'There are no feeds yet.',
 	'FPB_READ_MORE'						=> 'Read more',
 	'FPB_REQUIRE_SIMPLEXML'				=> 'The PHP <a href="http://php.net/manual/en/book.simplexml.php">SimpleXML extension</a> is not available on the server. The extension needs this to read the feeds and therefore cannot be installed.',
-	'FPB_REQUIRE_URL_FOPEN'				=> 'The PHP INI setting <a href="http://php.net/manual/en/filesystem.configuration.php">allow_url_fopen</a> is disabled on the server. The extension needs this to read the feeds and therefore cannot be installed.',
 	'FPB_SOURCE'						=> 'Source:',
 	'FPB_TEXTLIMIT'						=> 'Text limit',
 	'FPB_TEXTLIMIT_EXPLAIN'				=> 'The feed text is limited to given number of characters. Note that this value is applied to the raw feed text and words will be kept intact. Afterwards any broken HTML from the feed will be mended and converted to BBcode and a link with “Read more” is appended. The limit is therefore only an incidation for the resulting post text. <br> Set to 0 to disable text limiting.',

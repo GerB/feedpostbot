@@ -51,7 +51,6 @@ $lang = array_merge($lang, array(
 	'FPB_NO_FEEDS'						=> 'Er zijn nog geed feeds ingevoerd.',
 	'FPB_READ_MORE'						=> 'Lees meer',
 	'FPB_REQUIRE_SIMPLEXML'				=> 'De PHP <a href="http://php.net/manual/en/book.simplexml.php">SimpleXML extensie</a> is niet beschikbaar op de server. De extensie heeft dit nodig om feeds te lezen en kan daarom niet geïnstalleerd worden.',
-    'FPB_REQUIRE_URL_FOPEN'				=> 'De PHP INI optie <a href="http://php.net/manual/en/filesystem.configuration.php">allow_url_fopen</a> is uitgeschakeld op de server. De extensie heeft dit nodig om feeds te lezen en kan daarom niet geïnstalleerd worden.',
 	'FPB_SOURCE'						=> 'Bron:',
 	'FPB_TEXTLIMIT'						=> 'Tekstlimiet',
 	'FPB_TEXTLIMIT_EXPLAIN'				=> 'De ruwe tekst van de feed zal gelimiteerd worden tot het opgegeven aantal tekens. Woorden worden niet afgekapt en eventuele HTML-fouten die hierdoor ontstaan worden gerepareerd alvorens de BBcode conversie plaatsvind. Er wordt een “Lees meer” link toegevoegd. <br> Stel op 0 in om deze functie uit te schakelen.',
