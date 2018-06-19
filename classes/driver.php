@@ -123,7 +123,7 @@ class driver
 		foreach($this->current_state as $id => $source)
 		{
 			// Only proceed if not disabled in ACP
-			if ($source['forum_id'] > 0)
+			if (!empty($source['forum_id']))
 			{
 				$counter += $this->fetch_items($this->parse_feed($source['url'], $source['type'], $source['timeout']), $id);
 			}
@@ -494,20 +494,21 @@ class driver
 		{
 			include($this->phpbb_root_path . 'includes/functions_posting.' . $this->php_ext);
 		}
-
+        $source = $this->current_state[$source_id];
+        
 		// Make sure we have UTF-8 and handle HTML
 		$description = $rss_item['description'];
 		$title = $this->clean_title($rss_item['title']);
-		if (!empty($this->current_state[$source_id]['prefix']))
+		if (!empty($source['prefix']))
 		{
-			$title = trim($this->current_state[$source_id]['prefix']) . ' ' . $title;
+			$title = trim($source['prefix']) . ' ' . $title;
 		}
 
 		// Only show excerpt of feed if a text limit is given, but make it nice
-		if (!empty($this->current_state[$source_id]['textlimit']))
+		if (!empty($source['textlimit']))
 		{
-			$post_text = $this->html2bbcode($this->closetags($this->character_limiter($description, $this->current_state[$source_id]['textlimit'])));
-            if (!empty($this->current_state[$source_id]['append_link']))
+			$post_text = $this->html2bbcode($this->closetags($this->character_limiter($description, $source['textlimit'])));
+            if (!empty($source['append_link']))
             {
                 $post_text .= "\n\n" . '[url=' . $rss_item['link'] . ']' . $this->user->lang('FPB_READ_MORE') . '[/url]';
             }
@@ -515,54 +516,66 @@ class driver
 		else
 		{
 			$post_text = $this->html2bbcode($description);
-            if (!empty($this->current_state[$source_id]['append_link']))
+            if (!empty($source['append_link']))
             {
                 $post_text .= "\n\n" . $this->user->lang('FPB_SOURCE') . ' [url]' .  $rss_item['link'] . '[/url]';
             }
 		}
 
-		$poll = $uid = $bitfield = $options = '';
-		$allow_bbcode = $allow_urls = $allow_smilies = true;
-		generate_text_for_storage($post_text, $uid, $bitfield, $options, $allow_bbcode, $allow_urls, $allow_smilies);
+        if (is_numeric($source['forum_id']))
+        {
+            // Prep posting
+            $poll = $uid = $bitfield = $options = '';
+            $allow_bbcode = $allow_urls = $allow_smilies = true;
+            generate_text_for_storage($post_text, $uid, $bitfield, $options, $allow_bbcode, $allow_urls, $allow_smilies);
 
-		$data = array(
-			// General Posting Settings
-			'forum_id'			 => $this->current_state[$source_id]['forum_id'], // The forum ID in which the post will be placed. (int)
-			'topic_id'			 => 0, // Post a new topic or in an existing one? Set to 0 to create a new one, if not, specify your topic ID here instead.
-			'icon_id'			 => false, // The Icon ID in which the post will be displayed with on the viewforum, set to false for icon_id. (int)
-			// Defining Post Options
-			'enable_bbcode'		 => true, // Enable BBcode in this post. (bool)
-			'enable_smilies'	 => true, // Enabe smilies in this post. (bool)
-			'enable_urls'		 => true, // Enable self-parsing URL links in this post. (bool)
-			'enable_sig'		 => true, // Enable the signature of the poster to be displayed in the post. (bool)
-			// Message Body
-			'message'			 => $post_text, // Your text you wish to have submitted. It should pass through generate_text_for_storage() before this. (string)
-			'message_md5'		 => md5($post_text), // The md5 hash of your message
-			// Values from generate_text_for_storage()
-			'bbcode_bitfield'	 => $bitfield, // Value created from the generate_text_for_storage() function.
-			'bbcode_uid'		 => $uid, // Value created from the generate_text_for_storage() function.    
-            // Other Options
-			'post_edit_locked'	 => 0, // Disallow post editing? 1 = Yes, 0 = No
-			'topic_title'		 => $title,
-			'notify_set'		 => true, // (bool)
-			'notify'			 => true, // (bool)
-			'post_time'			 => empty($this->current_state[$source_id]['curdate']) ? strtotime($rss_item['pubDate']) : 0, // Set a specific time, use 0 to let submit_post() take care of getting the proper time (int)
-			'forum_name'		 => $this->get_forum_name($this->current_state[$source_id]['forum_id']), // For identifying the name of the forum in a notification email. (string)    // Indexing
-			'enable_indexing'	 => true, // Allow indexing the post? (bool)    // 3.0.6
-		);
+            $data = array(
+                // General Posting Settings
+                'forum_id'			 => $source['forum_id'], // The forum ID in which the post will be placed. (int)
+                'topic_id'			 => 0, // Post a new topic or in an existing one? Set to 0 to create a new one, if not, specify your topic ID here instead.
+                'icon_id'			 => false, // The Icon ID in which the post will be displayed with on the viewforum, set to false for icon_id. (int)
+                // Defining Post Options
+                'enable_bbcode'		 => true, // Enable BBcode in this post. (bool)
+                'enable_smilies'	 => true, // Enabe smilies in this post. (bool)
+                'enable_urls'		 => true, // Enable self-parsing URL links in this post. (bool)
+                'enable_sig'		 => true, // Enable the signature of the poster to be displayed in the post. (bool)
+                // Message Body
+                'message'			 => $post_text, // Your text you wish to have submitted. It should pass through generate_text_for_storage() before this. (string)
+                'message_md5'		 => md5($post_text), // The md5 hash of your message
+                // Values from generate_text_for_storage()
+                'bbcode_bitfield'	 => $bitfield, // Value created from the generate_text_for_storage() function.
+                'bbcode_uid'		 => $uid, // Value created from the generate_text_for_storage() function.    
+                // Other Options
+                'post_edit_locked'	 => 0, // Disallow post editing? 1 = Yes, 0 = No
+                'topic_title'		 => $title,
+                'notify_set'		 => true, // (bool)
+                'notify'			 => true, // (bool)
+                'post_time'			 => empty($source['curdate']) ? strtotime($rss_item['pubDate']) : 0, // Set a specific time, use 0 to let submit_post() take care of getting the proper time (int)
+                'forum_name'		 => $this->get_forum_name($source['forum_id']), // For identifying the name of the forum in a notification email. (string)    // Indexing
+                'enable_indexing'	 => true, // Allow indexing the post? (bool)    // 3.0.6
+            );
+        }
+        // Maybe an extension handles the content other than by posting
+        $do_post = true;
         
         /**
-        * Modify the post data array before post is submitted
-        *
-        * @event ger.feedpostbot.submit_post_before
-        * @var  array  data  Data array send to the submit_post function
-        * @var  array  rss_item  Complete feed item as fetched by parse_{method}
-        * @since 1.0.1
-        */
-        $vars = array('data', 'rss_item');
+         * Modify the post data array before post is submitted
+         *
+         * @event ger.feedpostbot.submit_post_before
+         * @var  array  data  Data array send to the submit_post function
+         * @var  array  rss_item  Complete feed item as fetched by parse_{method}
+         * @var  array  source      source settings
+         * @var  string  title      topic title
+         * @var  bool   do_post     set to false if you don't want to post
+         * @since 1.0.1
+         */
+        $vars = array('data', 'rss_item', 'source', 'title', 'do_post');
         extract($this->phpbb_dispatcher->trigger_event('ger.feedpostbot.submit_post_before', compact($vars)));
-
-		return submit_post('post', $data['topic_title'], $this->user->data['username'], POST_NORMAL, $poll, $data);
+        if ($do_post)
+        {
+            return submit_post('post', $title, $this->user->data['username'], POST_NORMAL, $poll, $data);
+        }
+        return true;
 	}
 
 	/**
@@ -633,7 +646,7 @@ class driver
 	 * @param int $id
 	 * @return string
 	 */
-	private function get_forum_name($id)
+	public function get_forum_name($id)
 	{
 		$sql = 'SELECT forum_name
 				FROM ' . FORUMS_TABLE . '
@@ -650,7 +663,7 @@ class driver
 	 * @param string $end_char
 	 * @return string
 	 */
-	private function character_limiter($str, $n = 300, $end_char = '...')
+	public function character_limiter($str, $n = 300, $end_char = '...')
 	{
 		if (strlen($str) < $n)
 		{
@@ -685,7 +698,7 @@ class driver
 	 * @param string $html
 	 * @return string
 	 */
-	private function closetags($html)
+	public function closetags($html)
 	{
 		// put all opened tags into an array
 		preg_match_all("#<([a-z]+)( .*)?(?!/)>#iU", $html, $result);
@@ -724,7 +737,7 @@ class driver
 	 * @param string $html_string
 	 * @return string
 	 */
-	private function html2bbcode($html_string)
+	public function html2bbcode($html_string)
 	{ 
 		$convert = array(
             "/[\r\n]+/" => " ",

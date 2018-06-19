@@ -22,8 +22,9 @@ class main_module
 		global $request, $template, $user, $phpbb_container, $config;
 		$config_text = $phpbb_container->get('config_text');
 		$feedpostbot = $phpbb_container->get('ger.feedpostbot.classes.driver');
+		$phpbb_dispatcher = $phpbb_container->get('dispatcher');
 
-		$this->tpl_name		 = 'acp_feedpostbot_body';
+        $this->tpl_name		 = 'acp_feedpostbot_body';
 		$this->page_title	 = $user->lang('FPB_ACP_FEEDPOSTBOT_TITLE');
 		add_form_key('ger/feedpostbot');
 
@@ -114,7 +115,7 @@ class main_module
 						'url' => $url,
 						'type' => $request->variable($id.'_type', $current_state[$id]['type']),
 						'prefix' => $request->variable($id.'_prefix', '', true),
-						'forum_id' => $request->variable($id.'_forum_id', 0),
+						'forum_id' => $request->variable($id.'_forum_id', ''),
 						'user_id' => $request->variable($id.'_user_id', $user->data['user_id']),
 						'textlimit' => $request->variable($id.'_textlimit', 0),
 						'timeout' => $request->variable($id.'_timeout', 3),
@@ -150,7 +151,7 @@ class main_module
 		{
 			foreach ($current_state as $id => $source)
 			{
-				$template->assign_block_vars('feeds', array(
+                $block_vars = array(
 					'ID'		=> $id,
 					'URL'		=> $source['url'],
 					'TYPE'		=> $source['type'],
@@ -162,7 +163,21 @@ class main_module
 					'TIMEOUT'	=> $source['timeout'],
 					'S_CURDATE'	=> empty($source['curdate']) ? false : true,
 					'S_APPEND_LINK'	=> empty($source['append_link']) ? false : true,
-				));
+				);
+                
+                /**
+                 * Modify the post data array before post is submitted
+                 *
+                 * @event ger.feedpostbot.acp_override_feed_block_vars
+                 * @var  array  block_vars  default available block_vars
+                 * @var  array  source      source settings from DB
+                 * @var  bool   id          source id
+                 * @since 1.0.14
+                 */
+                $vars = array('block_vars', 'source', 'id');
+                extract($phpbb_dispatcher->trigger_event('ger.feedpostbot.acp_override_feed_block_vars', compact($vars)));
+
+                $template->assign_block_vars('feeds', $block_vars);
 			}
 		}
 

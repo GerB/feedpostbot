@@ -3,8 +3,8 @@
     "type": "phpbb-extension",
     "description": "Simple feed reader that posts new items in your forum. Supports RSS, RDF and ATOM feeds",
     "homepage": "",
-    "version": "1.0.13",
-    "time": "2018-06-18",
+    "version": "1.0.14",
+    "time": "2018-06-19",
     "license": "GPL-2.0",
     "authors": [
         {
