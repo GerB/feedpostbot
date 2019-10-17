@@ -250,7 +250,7 @@ class driver
 		{
 			$append = array(
 				'guid' => $this->prop_to_string($item->id),
-				'title' => $this->prop_to_string($item->title),
+				'title' => strip_tags($this->prop_to_string($item->title)),
 				'link' => $this->prop_to_string($item->link->attributes()->href),
 				'description' =>  $this->get_item_description($item, $ns),
 				'pubDate' => empty($item->updated) ? 0 : $this->prop_to_string($item->updated),
@@ -631,6 +631,7 @@ class driver
 		$this->db->sql_freeresult($result);
         $row['is_registered'] = true;
         $this->user->data = array_merge($this->user->data, $row);
+        $this->user->timezone = $row['user_timezone'];
         
         if ($cur_lang != $row['user_lang'])
         {
