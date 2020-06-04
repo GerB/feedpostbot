@@ -470,6 +470,14 @@ class driver
 		{
 			return true;
 		}
+		else if ($item['link'] == $current['link'])
+		{
+			return true;
+		}
+		else if (!empty($item['pubDate']) && (strtotime($item['pubDate']) < strtotime($current['pubDate']))) 
+		{
+			return true;
+		}
 		return false;
 	}
 
